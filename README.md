@@ -61,10 +61,6 @@ Autogenesis/
   workdir/                 # runtime artifacts (logs, traces, results, etc.)
 ```
 
-## Empirical studies
-
-See empirical results and benchmark protocols in `docs/empirical_studies.md`.
-
 ## Optional: run a Tool-Calling Agent
 
 Prerequisites:
@@ -81,7 +77,7 @@ python examples/run_tool_calling_agent.py --config configs/tool_calling_agent.py
 ```
 @misc{zhang2026autogenesisselfevolvingagentprotocol,
       title={Autogenesis: A Self-Evolving Agent Protocol}, 
-      author={Wentao Zhang and Zhe Zhao and Haibin Wen and Yingcheng Wu and Ming Yin and Bo An and Mengdi Wang},
+      author={Wentao Zhang and Zhe Zhao and Haibin Wen and Yingcheng Wu and Cankun Guo and Ming Yin and Bo An and Mengdi Wang},
       year={2026},
       eprint={2604.15034},
       archivePrefix={arXiv},

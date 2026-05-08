@@ -61,10 +61,6 @@ Autogenesis/
   workdir/                 # 运行产物（日志/轨迹/结果等）
 ```
 
-## 实验结果
-
-实验设置与结果汇总见 `docs/empirical_studies.md`（英文）。
-
 ## （可选）运行 Tool-Calling Agent
 
 前置条件：
@@ -89,7 +85,7 @@ python examples/run_tool_calling_agent.py \
 ```
 @misc{zhang2026autogenesisselfevolvingagentprotocol,
       title={Autogenesis: A Self-Evolving Agent Protocol}, 
-      author={Wentao Zhang and Zhe Zhao and Haibin Wen and Yingcheng Wu and Ming Yin and Bo An and Mengdi Wang},
+      author={Wentao Zhang and Zhe Zhao and Haibin Wen and Yingcheng Wu and Cankun Guo and Ming Yin and Bo An and Mengdi Wang},
       year={2026},
       eprint={2604.15034},
       archivePrefix={arXiv},

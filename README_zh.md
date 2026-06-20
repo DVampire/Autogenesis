@@ -85,7 +85,7 @@ python examples/run_tool_calling_agent.py \
 ```
 @misc{zhang2026autogenesisselfevolvingagentprotocol,
       title={Autogenesis: A Self-Evolving Agent Protocol}, 
-      author={Wentao Zhang and Zhe Zhao and Haibin Wen and Yingcheng Wu and Cankun Guo and Ming Yin and Bo An and Mengdi Wang},
+      author={Wentao Zhang and Zhe Zhao and Haibin Wen and Yingcheng Wu and Cankun Guo and Ming Yin and Bo An},
       year={2026},
       eprint={2604.15034},
       archivePrefix={arXiv},

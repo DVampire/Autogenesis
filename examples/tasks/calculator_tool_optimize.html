@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="calculator_tool_optimize">
+  <meta name="description" content="Optimize calculator_tool — add modulo and power operations">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Improve the existing `calculator_tool` so that, in addition to the four basic
+arithmetic operations, it also supports modulo (`%`) and power (`**`).
+Deliver the change as an extension component (do not modify `src/`).
+</objective>
+
+<requirements>
+- Keep the four existing operations working: `+` `-` `*` `/`.
+- Add `%` (modulo) and `**` (power).
+- Modulo by zero must return a clear, specific error (graceful `success=False`, no crash).
+- Preserve the Response contract: numeric result in both `message` and the `data` dict.
+- Keep the same argument interface (`a`, `b`, `op`).
+</requirements>
+
+<interface>
+| Arg  | Type  | Description |
+|------|-------|-------------|
+| `a`  | float | Left operand. |
+| `b`  | float | Right operand. |
+| `op` | str   | One of `+` `-` `*` `/` `%` `**`. |
+</interface>
+
+<acceptance>
+```
+{"a": 7, "b": 3, "op": "%"}   →   1.0
+{"a": 2, "b": 10, "op": "**"} →   1024.0
+{"a": 5, "b": 0, "op": "%"}   →   clear modulo-by-zero error (success=False)
+{"a": 6, "b": 3, "op": "/"}   →   2.0   (existing behavior preserved)
+```
+</acceptance>
+</div>
+
+</body>
+</html>

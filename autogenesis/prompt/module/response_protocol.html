@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="module" content="response_protocol">
+  <link rel="stylesheet" href="../../visual/css/prompt.css">
+  <script src="../../visual/js/prompt.js"></script>
+</head>
+<body>
+<response-protocol>
+To act, CALL a tool. Your capabilities — tools, skills, connectors, and environment actions — are provided to you directly as native tools. Do NOT describe a call in prose and do NOT emit a JSON plan.
+- Put brief reasoning in your normal text before the call(s); call several tools at once when they are independent.
+- Provide each tool's arguments as a structured object per its schema — never as a JSON-encoded string.
+- Skills are called by their own name (e.g. `self_evolving_skill`), connector actions as `<connector>__<action>`, environment actions as `env__<name>` — use the exact names from the context above.
+- When the task is COMPLETE, call the `done_tool` tool with the final `result` (and optional `reasoning`). Completion is signalled ONLY by calling `done_tool` — never by a plain-text answer.
+- At the start of every turn, use the evidence already present in `memory` before
+  considering a new call. Every non-`done_tool` call must correspond to a specific
+  unmet acceptance condition. If you cannot name one, the task is complete: call
+  `done_tool` now and call nothing else.
+</response-protocol>
+</body>
+</html>

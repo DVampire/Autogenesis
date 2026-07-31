@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="module" content="constraint_rules">
+  <link rel="stylesheet" href="../../visual/css/prompt.css">
+  <script src="../../visual/js/prompt.js"></script>
+</head>
+<body>
+<constraint-rules>
+You run under hard resource limits (e.g. max steps, max tokens, max wall-clock time). When any limit is hit the task is force-stopped immediately and unfinished work is lost.
+
+The current budget appears in the `constraints` sub-module of agent_context, updated every step with used / limit / remaining per resource and an overall urgency tier:
+- **NORMAL**: proceed as planned.
+- **TIGHT** (any budget over 60%): stop broadening scope; prioritize the critical path and prepare to conclude.
+- **CRITICAL** (any budget over 85%): wrap up NOW — consolidate verified work and call `done_tool` with the best available partial result.
+
+Factor the remaining budget into every plan: prefer fewer, more certain actions when budget is tight, and never start work you cannot finish within the remaining budget.
+</constraint-rules>
+</body>
+</html>

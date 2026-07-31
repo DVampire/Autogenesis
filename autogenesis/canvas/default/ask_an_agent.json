@@ -1,0 +1,103 @@
+{
+  "id": "",
+  "name": "Ask an Agent",
+  "description": "Send a question to an agent and return its answer.",
+  "version": "1.0.0",
+  "document_version": 2,
+  "nodes": [
+    {
+      "id": "in_q",
+      "type": "input",
+      "step_type": null,
+      "target": null,
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "question",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "Your question.",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "ag",
+      "type": "step",
+      "step_type": "agent",
+      "target": "general_agent",
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "out_a",
+      "type": "output",
+      "step_type": null,
+      "target": null,
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "answer",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 560,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "in_q",
+      "target": "ag",
+      "param": "task",
+      "source_port": "out"
+    },
+    {
+      "id": "e2",
+      "source": "ag",
+      "target": "out_a",
+      "param": "value",
+      "source_port": "out"
+    }
+  ],
+  "notes": [],
+  "published": false,
+  "program_hash": ""
+}

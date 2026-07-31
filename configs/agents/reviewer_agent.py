@@ -1,0 +1,16 @@
+reviewer_agent = dict(
+    name = "reviewer_agent",
+    type = "Agent",
+    description = "An independent critic that reviews, at the task/loop level, whether the user task was actually accomplished, what defects remain, whether self-evolution helped, and whether the loop should continue, evolve more, or stop — verifying the real deliverable hands-on, not just reading claims.",
+    model_name = "google/gemini-3.1-pro-preview",
+    prompt_name = "reviewer_agent",
+    memory_name = "file_system_memory",
+    max_actions = 10,
+    max_step = 30,
+    max_token = 1000000,
+    timeout = 1800,
+    review_steps = 5,
+    log_max_length = 1000,
+    enable_evolving = False,
+    use_memory = False,
+)

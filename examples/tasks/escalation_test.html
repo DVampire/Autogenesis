@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="escalation_test">
+  <meta name="description" content="End-to-end test of the escalation channel: a sub-agent blocks, asks the orchestrator, and resumes on the reply.">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+This is a deliberate END-TO-END TEST of the escalation channel — a sub-agent that blocks,
+asks you (the orchestrator) for a decision, and continues once you reply. Drive it exactly
+as scripted below; the point is to exercise escalate → reply → resume, not to be clever.
+</objective>
+
+<steps>
+1. Dispatch `general_agent` with a task that FORCES it to escalate. Give it this EXACT instruction:
+   "Report a codeword for a label. You are NOT allowed to choose the codeword yourself — it is a
+    decision only the orchestrator may make. You MUST call `escalate_tool` (reason: 'Need the
+    orchestrator to choose the codeword'; suggestion: 'reply with either APPLE or BANANA') and WAIT
+    for the reply. Do NOT guess or pick one on your own. Once you receive the reply, state exactly:
+    'The codeword is &lt;X&gt;.' where &lt;X&gt; is whatever the orchestrator told you, then finish."
+2. When `general_agent` escalates (you receive an ESCALATE event), reply to it — choose the
+   codeword **BANANA**.
+3. After `general_agent` finishes, report the codeword it ended up with.
+</steps>
+
+<acceptance>
+- `general_agent` actually escalated (called `escalate_tool`) instead of guessing.
+- You replied with BANANA, and it resumed and continued.
+- Your final answer reports: the codeword is BANANA — proving escalate → reply → resume
+  works end-to-end across the escalation channel.
+</acceptance>
+</div>
+
+</body>
+</html>

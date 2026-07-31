@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Global Seismic Situational-Awareness Dashboard</title></head>
+<body>
+<h1>Task: Global earthquake situational-awareness dashboard (capability-building)</h1>
+
+<p>
+Build a polished, single self-contained HTML dashboard that turns <strong>real, recent
+global earthquake data</strong> into a situational-awareness briefing: where the significant
+quakes were, how strong, how much energy they released, how close they struck to major
+population centers, and what the spatial/temporal/magnitude patterns are.
+</p>
+
+<p>
+This is deliberately a domain the system has <strong>no ready-made capabilities for</strong>
+(the loaded connectors are all bio/chem/genomics; there is no geospatial tool and no seismic
+methodology skill). Treat that as the point of the exercise: where a capability is genuinely
+missing, <strong>evolve a new, reusable capability of the right type into <code>extension/</code></strong>
+— then actually use it to produce the deliverable. Follow the self-evolving playbook
+(decide → generate → evaluate → adopt or roll back); do not hand-wave capabilities you never built.
+</p>
+
+<h2>Capabilities you are expected to build (each a real, registered extension component)</h2>
+<ol>
+  <li><strong>A connector</strong> for a public seismic data feed (e.g. the USGS earthquake
+    GeoJSON feeds at <code>earthquake.usgs.gov</code>, which need no auth). Build it as a proper
+    reusable connector — not a one-off <code>web_fetcher</code> call — so the capability persists
+    and is inspectable. It must fetch a <em>bounded</em> feed (e.g. magnitude ≥ 4.5, past 30 days).</li>
+  <li><strong>A tool</strong> for the geospatial/seismic math this domain needs and that no
+    existing tool provides: great-circle (haversine) distance from a quake to the nearest of a
+    fixed list of major cities, and an approximate energy-release estimate from magnitude
+    (e.g. log10 E ≈ 1.5·M + 4.8, in joules). Reusable, with a clean structured <code>data</code> result.</li>
+  <li><strong>A skill</strong> capturing the analytical methodology so the report is
+    systematically rigorous rather than ad hoc: how to characterize a seismic catalog —
+    spatial distribution, temporal trend, the magnitude–frequency (Gutenberg–Richter)
+    relationship, and proximity-to-population exposure — and how to present it honestly.</li>
+</ol>
+<p>
+If, while building, a sub-agent hits a <em>recurring structural</em> failure (same fault ≥2×),
+optimize the responsible agent/prompt rather than retrying blindly. For every capability you
+create or change: evaluate it, keep it only if it demonstrably helps, and roll it back with the
+evolution tool if it does not. Report explicitly what you evolved and why.
+</p>
+
+<h2>The deliverable</h2>
+<ul>
+  <li>A single self-contained <code>seismic_dashboard.html</code> that opens standalone —
+    every figure embedded inline as a <code>data:</code> URI, no external files needed.</li>
+  <li>Content, every claim backed by a number you actually computed from the fetched data:
+    <ul>
+      <li>Headline stats: event count, date range covered, largest quake (magnitude, place,
+        estimated energy), and total estimated energy released.</li>
+      <li>A spatial view (a lon/lat scatter or simple inline map) sized/colored by magnitude.</li>
+      <li>A temporal view (events per day over the window).</li>
+      <li>A magnitude–frequency plot and the fitted Gutenberg–Richter b-value.</li>
+      <li>A proximity table: the N largest quakes and the nearest major city with its
+        great-circle distance (computed by your new tool).</li>
+      <li>An honest limitations section (feed completeness, magnitude thresholds, sampling).</li>
+    </ul>
+  </li>
+  <li>Verify the dashboard hands-on with the browser agent: it renders, all figures are
+    visible, and the console is free of errors.</li>
+</ul>
+
+<h2>Hard constraints (read before fetching data)</h2>
+<ul>
+  <li><strong>Bound the data.</strong> Use a filtered feed (magnitude ≥ 4.5, past 30 days) — on
+    the order of tens to a few hundred events, not the full firehose.</li>
+  <li><strong>Never read a raw data file into the conversation.</strong> Do NOT <code>cat</code>
+    / print whole JSON/CSV files. Process data with scripts and print only compact summaries
+    (≤ ~50 rows or ≤ ~2 KB at a time). Oversized dumps into context are a hard failure.</li>
+  <li>If the seismic feed is unreachable from this environment, say so explicitly and fall
+    back to a small bundled sample, but still build the connector/tool/skill as specified.</li>
+  <li>Keep the whole run within a sensible budget; if it gets tight, finish the deliverable
+    with the capabilities you already have rather than starting new evolution rounds.</li>
+</ul>
+
+<h2>Acceptance criteria</h2>
+<ul>
+  <li>A self-contained <code>seismic_dashboard.html</code> that opens standalone with all
+    figures visible and verifies as self-contained.</li>
+  <li>It is built on real fetched seismic data — state the event count and date range.</li>
+  <li>At least <strong>three new extension components of different types</strong> (a connector,
+    a tool, and a skill) were generated, registered, evaluated, and actually used — listed in
+    the report with their evaluation verdicts.</li>
+  <li>The analysis (b-value, energy, distances, trends) is backed by actual computed values.</li>
+</ul>
+</body>
+</html>

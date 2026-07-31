@@ -1,0 +1,18 @@
+browser_agent = dict(
+    name = "browser_agent",
+    type = "Agent",
+    description = "A browser agent that navigates and operates web pages through the browser environment: clicking, typing, scrolling, and running Playwright commands as a fallback.",
+    model_name = "google/gemini-3.1-pro-preview",
+    prompt_name = "browser_agent",
+    memory_name = "file_system_memory",
+    env_name = "browser_environment",
+    max_actions = 3,
+    max_step = 30,
+    max_token = 1000000,
+    timeout = 1800,
+    max_screenshots = 2,
+    review_steps = 5,
+    log_max_length = 1000,
+    enable_evolving = False,
+    use_memory = True,
+)

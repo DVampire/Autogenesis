@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="gaia_maze_environment">
+  <meta name="description" content="Solve real GAIA task 65afbc8a by building the stateful grid world it requires, discovering from real play that the world was modelled wrong, and evolving the environment until the answer matches GAIA ground truth">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Answer a real task from the GAIA benchmark — validation task
+`65afbc8a-89ca-4ad5-8d62-355bb401f61d`, Level 1 — and answer it the way the task
+actually demands: by building the world it describes and walking through it.
+
+The verbatim GAIA question:
+
+> You are given this Excel file as a map. You start on the START cell and move
+> toward the END cell. You are allowed to move two cells per turn, and you may
+> move up, down, left, or right. You may not move fewer than two cells, and you
+> may not move backward. You must avoid moving onto any blue cells. On the
+> eleventh turn, what is the 6-digit hex code (without prefix) of the color of
+> the cell where you land after moving?
+
+The attached spreadsheet is staged for you under `inputs/` in your workspace.
+
+This is not a question you can answer by reading one cell. It asks where you are
+**on the eleventh turn** — so something has to hold a position and advance it
+turn by turn. "You may not move backward" means that something must also
+remember where you came from. That is a stateful world, and this framework has
+none that fits: it ships only a browser and an artifact renderer. So build the
+world, walk it, and let the walk tell you whether you built it correctly.
+</objective>
+
+<requirements>
+- Deliver `grid_maze_environment` as an extension component under the
+  environment convention (`environment.py` + `ENVIRONMENT.md` + `__init__.py`).
+  Never modify `src/` or any built-in package file.
+- Read the map from the `.xlsx` with `openpyxl`. A cell's identity is its **fill
+  colour**, not its value — only two cells carry text (`START` and `END`).
+  Blue `FF0099FF` cells are walls; every other colour is walkable floor.
+- State must persist across separate action calls: position, the cell you came
+  from, and the turn counter. Two consecutive `move` calls must compose.
+- Fully deterministic. No randomness, no timing dependence.
+- Report colours as the raw 8-digit ARGB from openpyxl (e.g. `FFF478A7`); the
+  GAIA answer is that value without its 2-character prefix.
+</requirements>
+
+<interface>
+| Action | Args | Returns |
+|---|---|---|
+| `load_map` | `path` (str): the staged `.xlsx` | Grid size, START/END cells, colour census. |
+| `reset` | — | Position back to START, turn counter to 0. |
+| `move` | `direction` (str): `up`/`down`/`left`/`right` | New position and the colour of the cell landed on, or a clear error naming why the move was illegal. |
+| `get_state` | — | Position (A1 notation), turn number, colour of the current cell, and whether the walk is stuck. |
+</interface>
+
+<acceptance>
+The GAIA ground-truth answer for this task is **`F478A7`**. The run is correct
+only if the environment is walked — not guessed — and the walk lands there:
+```
+load_map(staged xlsx)  → 20 rows x 9 cols, START=A1, END=I20,
+                         4 fill colours present
+reset                  → position A1, turn 0
+walk 11 turns          → lands on E3, colour FFF478A7
+report                 → F478A7, matching GAIA ground truth
+```
+A final answer that was reasoned out by hand rather than produced by the
+environment does not count, even if the string is right.
+</acceptance>
+
+<plan>
+This is orchestration work. Do NOT explore the repository yourself with
+`list_dir_tool` / `read_file_tool` — the sub-agents below read what they need.
+Your FIRST action is Round 1. Run these rounds in order, one per turn.
+
+- **Round 1 — dispatch `environment_generate_agent`** with `target_name` set to
+  `grid_maze_environment`. Invoke `environment_creator_skill` ONCE, then write the
+  three files immediately — do not re-read the skill. Hand it this exact spec so
+  it does not have to derive anything:
+  - class `GridMazeEnvironment`, registered via `@ENVIRONMENT.register_module`
+  - the base `Environment` declares `name` / `description` / `metadata` as
+    REQUIRED pydantic fields, so the subclass must redeclare all three with
+    defaults or instantiation fails outright. Copy this block verbatim:
+```
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
+
+    name: str = Field(default="grid_maze_environment")
+    description: str = Field(default="Grid maze loaded from an Excel map.")
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    enable_evolving: bool = Field(default=True)
+```
+  - instance state (set in `__init__` after `super().__init__(**kwargs)`):
+    `grid` (dict of `(row, col) -> ARGB colour string`), `pos`, `came_from`,
+    `turn`
+  - `load_map(path)` — `openpyxl.load_workbook(path)`, read `ws.max_row` /
+    `ws.max_column`, and for every cell store
+    `cell.fill.start_color.rgb` (guard: it is only a colour when it is a `str`)
+    and remember the cells whose `.value` is `START` / `END`
+  - `reset()` — `pos` = the START cell, `came_from` = None, `turn` = 0
+  - `move(direction)` — one turn = **two cells in a straight line** in
+    `up`/`down`/`left`/`right`; both the crossed cell and the landing cell must
+    be on-grid and not blue `FF0099FF`, and `direction` may not be the reverse
+    of the previous turn's. On success advance `pos`, set `came_from`, and
+    increment `turn`. On failure change nothing and return a clear reason.
+  - `get_state()` — `pos` in A1 notation, `turn`, the colour of the current
+    cell, and `stuck` (true when no legal direction remains)
+  - the map is 20 rows x 9 cols, START is `A1`, END is `I20`
+
+- **Round 2 — dispatch `code_agent`** to find the staged `.xlsx` under `inputs/`,
+  load it into the registered environment, and walk: `reset`, then turn after
+  turn, printing position and cell colour each time. Require the real printed
+  output back, however far it gets.
+
+- **Round 3 — read what Round 2 actually reported.** The walk does not reach
+  turn 11; it strands after the first turn, because the corridor on this map is
+  one cell wide and turns constantly, so a rigid two-cells-in-a-straight-line
+  turn walks into a wall almost immediately. The map is not wrong — the
+  environment's model of a "turn" is. Confirm this against the printed output,
+  then state which capability is missing.
+
+- **Round 4 — dispatch `environment_optimize_agent`** with `target_name` set to
+  `grid_maze_environment`, citing Round 3's output as the evidence. Bump to
+  v1.1.0, keep every existing action name and signature intact, and correct the
+  model of the world:
+  - a turn is **two single steps** along the corridor, and the direction may
+    change between them; a step is illegal only onto a blue cell or off-grid,
+    and may never return to the cell just left
+  - add `legal_moves` — the directions available from the current cell right
+    now, with the came-from direction excluded
+  - add `undo` — take back the last step, restoring position and came-from, so a
+    wrong branch can be walked back instead of forcing a `reset`
+
+- **Round 5 — dispatch `code_agent`** to walk the corrected environment for all
+  11 turns and print every step, and `environment_evaluate_agent` to score it
+  across the five quality dimensions. Both in the same turn.
+
+- **Round 6 — call `done_tool`** with the 6-digit hex answer, the fact that it
+  does or does not match GAIA ground truth `F478A7`, and the before/after: where
+  v1.0.0 stranded, and the cell v1.1.0 landed on at turn 11.
+</plan>
+</div>
+
+</body>
+</html>

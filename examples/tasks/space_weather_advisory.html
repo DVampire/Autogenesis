@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Space-Weather Situational-Awareness & Impact Advisory</title></head>
+<body>
+<h1>Task: Space-weather situational-awareness dashboard with a purpose-built impact-advisory agent (capability-building)</h1>
+
+<p>
+Build a polished, single self-contained HTML dashboard that turns <strong>real, recent
+space-weather data</strong> into an operations briefing: the current geomagnetic and solar-wind
+state, how it has evolved over the past week, how disturbed conditions are on the NOAA storm
+scales, and — the headline — <strong>what it means operationally</strong> for satellites, power
+grids, HF radio / GPS, polar aviation, and aurora visibility.
+</p>
+
+<p>
+This is deliberately a domain the system has <strong>no ready-made capabilities for</strong>
+(the loaded connectors are all bio/chem/genomics; there is no space-physics tool, no
+space-weather methodology skill, and no operations-advisory specialist among the worker
+agents). Treat that as the point of the exercise: where a capability is genuinely missing,
+<strong>evolve a new, reusable capability of the right type into <code>extension/</code></strong>
+— then actually use it to produce the deliverable. Follow the self-evolving playbook
+(decide → generate → evaluate → adopt or roll back); do not hand-wave capabilities you never built.
+</p>
+
+<h2>Capabilities you are expected to build (each a real, registered extension component)</h2>
+<ol>
+  <li><strong>A connector</strong> for NOAA SWPC public products (<code>services.swpc.noaa.gov</code>,
+    no auth). Build it as a proper reusable connector — not a one-off <code>web_fetcher</code> call.
+    It must fetch <em>bounded</em> recent products, e.g. the planetary K-index, the 7-day solar-wind
+    plasma and magnetic-field series, and GOES X-ray flux, returning compact structured results.</li>
+  <li><strong>A tool</strong> for the space-physics math this domain needs and that no existing tool
+    provides: map planetary Kp to the NOAA <em>G-scale</em> (G1–G5) geomagnetic-storm class; compute
+    solar-wind dynamic pressure (P ≈ 1.6726e-6 · n · v², nPa, with n in cm⁻³ and v in km/s); and
+    estimate the auroral equatorward boundary (approx. visibility latitude) from Kp. Reusable, with a
+    clean structured <code>data</code> result.</li>
+  <li><strong>A skill</strong> capturing the analytical methodology so the briefing is systematically
+    rigorous: how to read the indices, classify activity on the NOAA G/S/R scales, map each level to
+    concrete sector impacts, and present it with honest uncertainty (forecasts vs. measurements).</li>
+  <li><strong>A specialist agent</strong> — a NEW, reusable sub-agent (e.g.
+    <code>space_weather_advisor</code>) whose distinct role is to author and vet the
+    <em>operational-impact advisory</em>. The generic code/general agents do not fill this role: this
+    agent carries a specific persona and hard guardrails — every stated impact must be grounded in the
+    actual measured/forecast indices, each advisory line carries a confidence note, it uses NOAA scale
+    terminology correctly, it tailors guidance per sector (satellite ops, grid, HF/GPS, aviation,
+    public/aurora), and it must NOT overclaim or state impacts the data does not support. Build it as an
+    agent so the capability persists and is inspectable, then dispatch it to produce the advisory.</li>
+</ol>
+<p>
+If a sub-agent hits a <em>recurring structural</em> failure (same fault ≥2×), optimize the responsible
+agent/prompt rather than retrying blindly. For every capability you create or change: evaluate it, keep
+it only if it demonstrably helps, and roll it back with the evolution tool if it does not. Report
+explicitly what you evolved and why.
+</p>
+
+<h2>The deliverable</h2>
+<ul>
+  <li>A single self-contained <code>space_weather_dashboard.html</code> that opens standalone — every
+    figure embedded inline as a <code>data:</code> URI, no external files needed.</li>
+  <li>Content, every claim backed by a value you actually fetched/computed:
+    <ul>
+      <li>Current conditions: latest Kp (and its G-scale class), solar-wind speed / density / Bz,
+        dynamic pressure, and latest GOES X-ray flux class.</li>
+      <li>A 7-day trend view of Kp and solar-wind speed.</li>
+      <li>A storm-scale summary: peak Kp in the window, the corresponding G-scale, and estimated
+        aurora visibility latitude.</li>
+      <li><strong>An operational-impact advisory</strong> — authored/vetted by your new specialist
+        agent — with a per-sector table (satellites, power grid, HF radio & GPS, polar aviation,
+        aurora) and a confidence note on each line.</li>
+      <li>An honest limitations section (measurement vs. forecast, data latency, index caveats).</li>
+    </ul>
+  </li>
+  <li>Verify the dashboard hands-on with the browser agent: it renders, all figures are visible, and
+    the console is free of errors.</li>
+</ul>
+
+<h2>Hard constraints (read before fetching data)</h2>
+<ul>
+  <li><strong>Bound the data.</strong> Use recent, bounded products (current + past 7 days) — not bulk
+    archives.</li>
+  <li><strong>Never read a raw data file into the conversation.</strong> Do NOT <code>cat</code> / print
+    whole JSON files. Process data with scripts and print only compact summaries (≤ ~50 rows or ≤ ~2 KB
+    at a time). Oversized dumps into context are a hard failure.</li>
+  <li>If the SWPC feeds are unreachable from this environment, say so explicitly and fall back to a small
+    bundled sample, but still build the connector / tool / skill / agent as specified.</li>
+  <li>Keep the whole run within a sensible budget; if it gets tight, finish the deliverable with the
+    capabilities you already have rather than starting new evolution rounds.</li>
+</ul>
+
+<h2>Acceptance criteria</h2>
+<ul>
+  <li>A self-contained <code>space_weather_dashboard.html</code> that opens standalone with all figures
+    visible and verifies as self-contained.</li>
+  <li>It is built on real fetched SWPC data — state the time window and the latest values used.</li>
+  <li>At least <strong>four new extension components of different types</strong> — a connector, a tool,
+    a skill, AND a specialist agent — were generated, registered, evaluated, and actually used. The
+    agent must have authored/vetted the operational-impact advisory. List all four in the report with
+    their evaluation verdicts.</li>
+  <li>The operational-impact advisory is grounded in the actual computed indices (Kp/G-scale, solar-wind
+    pressure, X-ray class) with per-line confidence notes.</li>
+</ul>
+</body>
+</html>

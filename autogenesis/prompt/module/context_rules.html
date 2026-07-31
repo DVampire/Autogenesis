@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="module" content="context_rules">
+  <link rel="stylesheet" href="../../visual/css/prompt.css">
+  <script src="../../visual/js/prompt.js"></script>
+</head>
+<body>
+<context-rules>
+Memory is provided in the `memory` sub-module in two parts:
+- **Working Memory**: key decisions, results, or failures from earlier steps no longer in recent context.
+- **Recent Steps**: authoritative evidence of what was just done, including successful
+  writes, observed outputs, and verification results. Do not describe completed work as
+  still pending merely because the original task remains visible above it.
+
+Before choosing any action, reconcile the task with Memory, Todo, Workspace, and Errors:
+1. List only the acceptance conditions that are still unproven.
+2. Choose an action only when it proves or advances one of those remaining conditions.
+3. Treat a successful tool result as valid until a later edit, error, or external state
+   change invalidates it. Never repeat a successful read, test, inspection, or command
+   just to confirm the same unchanged fact.
+4. Detect repeated success as well as repeated failure. If an action produced no new
+   evidence or state change, do not call it again; change strategy, escalate, or finish.
+5. If no acceptance condition remains, call `done_tool` immediately. Do not perform an
+   extra read, listing, test, review, or summary action first.
+
+Tools, skills, and connectors:
+- Use only tools listed in tool_context, skills listed in skill_context, and connectors listed in connector_context. Do not invent names.
+- tool_context lists each resident tool WITH its full instruction (function / guidance / parameters / example), so you already have the arguments — call them directly. Use `inspect_tool` only to look up a tool that is NOT in tool_context (any other registered tool, by name).
+- When a task matches a skill, invoke it via a `skill` action (`"type": "skill"`, `"name"`: the skill name) — the system returns the skill's full instructions with runnable absolute paths and its resource/script/reference list, ready to execute. Only `read` the SKILL.md or reference files directly when you need extra detail those returned instructions did not cover.
+- To call a connector action, first read that connector's CONNECTOR.md (path in connector_context) to learn the action's arguments, then emit a `connector` action.
+- For multi-step or long-running tasks, use `todo_tool` to maintain a running plan/checklist — add the steps, then mark them complete as you go — so you track progress and don't lose the thread.
+- If no tools, skills, or connectors are loaded, ignore the respective context.
+</context-rules>
+</body>
+</html>

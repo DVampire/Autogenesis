@@ -1,0 +1,229 @@
+/* Dynamic Workflow preview — extends prompt.css visual contract version 1.0.0. */
+
+/* The executable source stays in the DOM for WorkflowCompiler/page inspection. */
+workflow { display: none; }
+
+.workflow-preview {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wf-hero,
+.wf-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.wf-hero { padding: 20px 24px; }
+
+.wf-eyebrow {
+  color: var(--green);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.wf-title {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.wf-description {
+  max-width: 760px;
+  margin: 0;
+  color: var(--text-mid);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.wf-badges,
+.wf-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.wf-badge,
+.wf-tag {
+  padding: 4px 7px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--surface-2);
+  color: var(--text-mid);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.wf-tag {
+  color: var(--green);
+  border-color: rgba(91, 173, 120, 0.2);
+  background: rgba(91, 173, 120, 0.04);
+}
+
+.wf-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.8fr);
+  gap: 20px;
+}
+
+.wf-section { padding: 20px 24px; }
+
+.wf-section h2 {
+  margin: 0 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-faint);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wf-input {
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.wf-input:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.wf-input strong {
+  display: block;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.wf-input span,
+.wf-empty {
+  color: var(--text-mid);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.wf-flow {
+  display: grid;
+  gap: 10px;
+  counter-reset: workflow-step;
+}
+
+.wf-step {
+  position: relative;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--blue);
+  border-radius: 2px;
+  background: var(--surface-2);
+  counter-increment: workflow-step;
+}
+
+.wf-step[data-kind="agent"] { border-left-color: var(--green); }
+.wf-step[data-kind="verify"] {
+  border-left-color: var(--amber);
+  background: rgba(207, 160, 64, 0.04);
+}
+.wf-step[data-kind="reduce"] {
+  border-left-color: var(--green);
+  background: rgba(91, 173, 120, 0.04);
+}
+.wf-step[data-kind="branch"],
+.wf-step[data-kind="loop"] { border-left-color: var(--red); }
+
+.wf-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.wf-step-title {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.wf-step-title::before {
+  content: counter(workflow-step, decimal-leading-zero) "  ·  ";
+  color: var(--text-faint);
+}
+
+.wf-kind {
+  color: var(--blue);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.wf-step[data-kind="agent"] > .wf-step-header .wf-kind,
+.wf-step[data-kind="reduce"] > .wf-step-header .wf-kind { color: var(--green); }
+.wf-step[data-kind="verify"] > .wf-step-header .wf-kind { color: var(--amber); }
+.wf-step[data-kind="branch"] > .wf-step-header .wf-kind,
+.wf-step[data-kind="loop"] > .wf-step-header .wf-kind { color: var(--red); }
+
+.wf-task {
+  margin: 10px 0 0;
+  color: var(--text-mid);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.wf-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.wf-detail {
+  padding: 3px 6px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--surface-3);
+  color: var(--text-mid);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  line-height: 1.3;
+}
+
+.wf-children {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0 12px;
+  padding-left: 12px;
+  border-left: 1px dashed var(--border-hi);
+  counter-reset: workflow-step;
+}
+
+@media (max-width: 760px) {
+  .wf-grid { grid-template-columns: 1fr; }
+  .wf-hero, .wf-section { padding: 16px; }
+}

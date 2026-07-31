@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="gaia_sales_evolution">
+  <meta name="description" content="Answer real GAIA task 7bd855d8 end to end, evolving a tool, a prompt and an agent as the run exposes what is missing, rolling back any evolution that regresses">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Answer a real task from the GAIA benchmark — validation task
+`7bd855d8-463d-4ed5-93ca-5fe35145f733`, Level 1.
+
+The verbatim GAIA question:
+
+> The attached Excel file contains the sales of menu items for a local fast-food
+> chain. What were the total sales that the chain made from food (not including
+> drinks)? Express your answer in USD with two decimal places.
+
+The spreadsheet is staged for you under `inputs/` in your workspace.
+
+GAIA is scored by exact string match, so this task has two independent ways to
+fail: getting the number wrong, and getting the *format* wrong. Both must be
+solved, and along the way this system does not yet have everything it needs.
+Evolve what is genuinely missing, evaluate every change, and undo any change that
+makes things worse.
+</objective>
+
+<requirements>
+- Deliver evolved capabilities as extension components. Never modify `src/` or
+  any built-in package file.
+- **Reading the spreadsheet MUST go through a registered tool.** An ad-hoc
+  `bash_tool` / `code_interpreter` snippet that imports `openpyxl` or `pandas`
+  is explicitly NOT acceptable as the reading mechanism: a throwaway script is
+  not reusable by other agents, not versioned, and not testable, and this system
+  exists to turn capabilities into durable components. So if no registered tool
+  can open `.xlsx`, that is a genuine missing capability and must be built
+  before the spreadsheet is read. You may still use the shell for verification
+  (syntax checks, running the tool), just not as the reader itself.
+- Every evolution must be justified by an OBSERVED failure in this run, never by
+  speculation. State the observation before you evolve.
+- The acceptance criterion is objective: the final answer string must be exactly
+  `89706.00`. Not `89706`, not `89706.0`, not `$89,706.00`, not `89,706.00`.
+- Do NOT hard-code the answer anywhere. It must be computed from the spreadsheet
+  and formatted by the capabilities in play.
+- If an evolution makes the answer worse or breaks something that previously
+  worked, roll it back with `evolution_tool` rather than patching over it.
+</requirements>
+
+<interface>
+The spreadsheet has one header row and one row per location. Columns are menu
+items; exactly one of them is a drink. "Food" means every menu-item column except
+the drink one.
+</interface>
+
+<acceptance>
+```
+final answer string == "89706.00"     ⇒ pass (GAIA exact match)
+anything else                          ⇒ fail
+```
+Report, for each evolution attempted: what was observed, what was evolved, the
+evaluator's verdict, and whether it was committed or rolled back.
+</acceptance>
+
+<plan>
+This is orchestration work. Do NOT explore the repository yourself with
+`list_dir_tool` / `read_file_tool` — dispatch sub-agents. Your FIRST action is
+Round 1. Do not skip ahead: each round's decision must rest on what the previous
+round actually reported.
+
+- **Round 1 — dispatch `general_agent`** to locate the staged `.xlsx` under
+  `inputs/` and report which of its **registered tools** can open it. Remind it
+  that an ad-hoc shell/python snippet does not count as a reader here. Require
+  it to name the tools it tried and what each did. Do NOT tell it how to solve
+  the problem.
+
+- **Round 2 — read Round 1's report and decide.** If no registered tool can open
+  `.xlsx`, that is a **missing capability** — dispatch `tool_generate_agent`
+  with `target_name` set to `xlsx_reader_tool`: a tool that opens a workbook and
+  returns its rows as structured data (args: `path`, optional `sheet`). If some
+  registered tool already reads it fine, skip this round and say so — do not
+  invent a need.
+
+- **Round 3 — dispatch `code_agent`** to compute the answer, reading the
+  spreadsheet **through the registered tool** (not an inline `openpyxl` /
+  `pandas` snippet): sum every menu-item column except the drink column, and
+  produce the final answer string in the format the GAIA question demands.
+  Require the exact string it would submit, and the tool call it used to read.
+
+- **Round 4 — judge the string against `89706.00`.**
+  - If the value itself is wrong, re-dispatch `code_agent` with the discrepancy —
+    that is a fix, not an evolution. Stop here.
+  - If the value is right but the FORMAT is wrong (e.g. `89706`, `89706.0`,
+    `$89,706.00`), the defect is not the agent's reasoning — nothing tells it
+    GAIA's output contract. Note that `code_agent` is a **built-in, frozen**
+    capability (`enable_evolving=False`): the gate blocks optimizing it, and the
+    framework's own rule is to *generate a new capability in `extension/`
+    instead*. So dispatch **`agent_generate_agent`** with `target_name` set to
+    `gaia_answer_agent`: an evolvable extension agent whose job is to turn a
+    computed value plus the question's stated format contract into the exact
+    submission string. Say explicitly in your reasoning that you are generating
+    rather than optimizing **because the target is frozen**.
+
+- **Round 4b — dispatch `code_agent`** to obtain the answer string from
+  `gaia_answer_agent` and report it verbatim.
+
+- **Round 5 — if Round 4b's string is still not exactly `89706.00`, evolve its
+  PROMPT.** `gaia_answer_agent` lives in `extension/` and IS evolvable, so this
+  time dispatch **`agent_optimize_agent`** with `target_name` set to
+  `gaia_answer_agent`, changing only its HTML prompt: emit the bare answer
+  string — no currency symbol, no thousands separator, exactly the decimal
+  places demanded, nothing else. If Round 4b was already exact, skip this round
+  and say so.
+
+- **Round 6 — dispatch `agent_evaluate_agent`** on what was evolved (the tool
+  from Round 2, the agent from Round 4, the prompt from Round 5), telling it the
+  objective criterion: the run must now produce exactly `89706.00`, and nothing
+  that worked before may be broken. Then act on its verdict with
+  `evolution_tool`:
+  - verdict good → keep it (**accepted → commit**); record `list_versions`.
+  - verdict regressed → `rollback` to the last known-good version
+    (**rejected → rollback**), then retry the evolution differently.
+
+- **Round 7 — dispatch `code_agent`** once more to re-produce the answer string
+  on whatever is live now, confirming it is exactly `89706.00`.
+
+- **Round 8 — call `done_tool`** with: the final answer string and whether it
+  matches `89706.00`; and for each of **tool / agent / prompt**, whether it was
+  evolved, the observation that justified it, the evaluator's verdict, and
+  whether it was committed or rolled back. State explicitly that `code_agent`
+  was NOT optimized because the `enable_evolving` gate froze it, and that a new
+  extension agent was generated instead. Say plainly if a category was not
+  evolved.
+</plan>
+</div>
+
+</body>
+</html>

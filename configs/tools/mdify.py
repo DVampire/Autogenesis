@@ -1,4 +1,4 @@
 mdify_tool = dict(
-    base_dir="workdir/tool/mdify",
-    require_grad = False
+    base_dir="tool/mdify",
+    enable_evolving = False
 )

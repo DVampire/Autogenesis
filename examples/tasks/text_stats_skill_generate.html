@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="text_stats_skill_generate">
+  <meta name="description" content="Generate text_stats_skill">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Generate a skill named `text_stats_skill` that guides an agent through computing
+basic statistics of a piece of text. Deliver it as an extension component
+(a skill directory with a SKILL.md; do not modify `src/`).
+</objective>
+
+<requirements>
+- Step-by-step instructions to compute: word count, character count, and line count.
+- Clear input (the text or a file path) and a structured output format for the three metrics.
+- Include a short worked example and a decision note for empty input.
+</requirements>
+
+<acceptance>
+```
+Given "hello world\nfoo"  →  words=3, chars=15, lines=2
+Given ""                  →  words=0, chars=0, lines=0 (handled explicitly)
+```
+</acceptance>
+</div>
+
+</body>
+</html>

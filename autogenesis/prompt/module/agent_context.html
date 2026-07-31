@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="module" content="agent_context">
+  <link rel="stylesheet" href="../../visual/css/prompt.css">
+  <script src="../../visual/js/prompt.js"></script>
+</head>
+<body>
+<agent-context>
+<task>
+{{ task }}
+</task>
+<constraints>
+{{ constraint_text }}
+</constraints>
+<step-info>
+{{ step_info }}
+</step-info>
+<memory>
+{{ memory_context }}
+</memory>
+{% if todo %}
+<todo>
+{{ todo }}
+</todo>
+{% endif %}
+<workspace>
+{{ workspace }}
+</workspace>
+{% if errors %}
+<errors>
+{{ errors }}
+</errors>
+{% endif %}</agent-context>
+</body>
+</html>

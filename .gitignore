@@ -1,3 +1,6 @@
+# Git worktrees (isolated workspaces for in-progress feature work)
+.worktrees/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -207,11 +210,23 @@ marimo/_lsp/
 __marimo__/
 
 others/
-.DS_Store
-.vscode/
 other/
 workdir/
+work_dir/
 logs/
 .claude/
+.claude.bak/
+.DS_Store
 .idea/
-.bashrc.template
+.vscode/
+
+# Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+datasets/
+output/
+
+# User-level Autogenesis home (config, staging, deploy registry, caches)
+.autogenesis/

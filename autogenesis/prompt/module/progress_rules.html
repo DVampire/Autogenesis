@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="module" content="progress_rules">
+  <link rel="stylesheet" href="../../visual/css/prompt.css">
+  <script src="../../visual/js/prompt.js"></script>
+</head>
+<body>
+<progress-rules>
+At the start of every turn, reconcile the task with Memory, Todo, Workspace, Errors,
+and any completed capability results before choosing an action:
+1. Identify only the acceptance conditions that are still unproven.
+2. Every action must prove or advance one specific remaining condition.
+3. A successful result remains valid until a later edit, error, or external state change
+   invalidates it. Never repeat an unchanged successful read, test, inspection, command,
+   sub-agent task, or verification merely to confirm the same fact again.
+4. Detect repeated success as well as repeated failure. If a proposed action would add no
+   evidence or state change, change strategy, escalate, or finish instead.
+5. If no acceptance condition remains, call `done_tool` immediately and call nothing else.
+   Do not restart the task narrative or perform an extra read, test, review, or summary.
+</progress-rules>
+</body>
+</html>

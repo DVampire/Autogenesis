@@ -1,0 +1,16 @@
+environment_evaluate_agent = dict(
+    name="environment_evaluate_agent",
+    type="EnvironmentEvaluateAgent",
+    description="An agent that evaluates a generated environment across multiple quality dimensions.",
+    model_name="google/gemini-3.1-pro-preview",
+    prompt_name="environment_evaluate_agent",
+    memory_name="file_system_memory",
+    permission_mode="read_only",
+    max_actions=10,
+    max_step=20,
+    max_token=1000000,
+    timeout=1800,
+    review_steps=5,
+    enable_evolving=False,
+    use_memory=True,
+)

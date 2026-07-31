@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Autogenesis · A Self-Evolving Multi-Agent Framework</title>
+<meta name="description" content="Autogenesis — a self-evolving multi-agent framework. A MetaAgent orchestrates sub-agents to complete tasks, while optimizer / evaluator / generator agents continuously improve the tool, skill, and agent ecosystem." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AC%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#05060f;
+    --bg-2:#0a0c1c;
+    --panel:rgba(255,255,255,.035);
+    --panel-strong:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.09);
+    --border-strong:rgba(255,255,255,.16);
+    --text:#eef1ff;
+    --muted:#9aa3c7;
+    --muted-2:#6f7aa6;
+    --brand:#7c5cff;
+    --brand-2:#22d3ee;
+    --brand-3:#ff5c9d;
+    --accent-a:#8b7bff;
+    --accent-b:#2dd4bf;
+    --radius:18px;
+    --maxw:1180px;
+    --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,"JetBrains Mono","Fira Code",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+    line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{line-height:1.15;margin:0;letter-spacing:-.02em}
+  p{margin:0}
+  ::selection{background:rgba(124,92,255,.35)}
+
+  /* ---------- background aurora ---------- */
+  .bg-fx{position:fixed;inset:0;z-index:-2;overflow:hidden;background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(124,92,255,.20), transparent 60%),
+    radial-gradient(1000px 700px at 100% 0%, rgba(34,211,238,.14), transparent 55%),
+    radial-gradient(900px 900px at 50% 120%, rgba(255,92,157,.10), transparent 60%),
+    var(--bg);}
+  .grid-fx{position:fixed;inset:0;z-index:-1;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 75%);
+            mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 75%);}
+  .blob{position:fixed;z-index:-1;border-radius:50%;filter:blur(80px);opacity:.5;animation:float 18s ease-in-out infinite}
+  .blob.b1{width:460px;height:460px;top:-80px;left:-80px;background:radial-gradient(circle,#5b3bff,transparent 70%)}
+  .blob.b2{width:420px;height:420px;top:20%;right:-120px;background:radial-gradient(circle,#0ea5b7,transparent 70%);animation-delay:-6s}
+  @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,40px)}}
+  @media (prefers-reduced-motion:reduce){.blob{animation:none}}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  /* ---------- nav ---------- */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+    background:rgba(5,6,15,.6);border-bottom:1px solid var(--border)}
+  .nav-inner{display:flex;align-items:center;gap:20px;height:66px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+  .brand .mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:16px;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 6px 20px rgba(124,92,255,.5)}
+  .nav-links{display:flex;gap:26px;margin-left:auto;font-size:14.5px;color:var(--muted)}
+  .nav-links a{transition:color .2s}.nav-links a:hover{color:var(--text)}
+  .nav-actions{display:flex;align-items:center;gap:12px}
+  .lang{display:flex;border:1px solid var(--border-strong);border-radius:999px;overflow:hidden;font-size:13px;font-weight:600}
+  .lang button{background:none;border:0;color:var(--muted);padding:6px 13px;cursor:pointer;font-family:inherit;font-weight:inherit;transition:.2s}
+  .lang button.active{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:11px;font-weight:600;font-size:14px;
+    border:1px solid var(--border-strong);transition:.2s;cursor:pointer}
+  .btn:hover{border-color:rgba(255,255,255,.35);transform:translateY(-1px)}
+  .btn.primary{background:linear-gradient(135deg,var(--brand),#5a3bff);border-color:transparent;
+    box-shadow:0 8px 24px rgba(124,92,255,.4)}
+  .btn.primary:hover{box-shadow:0 12px 30px rgba(124,92,255,.55)}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* ---------- hero ---------- */
+  header.hero{padding:110px 0 90px;text-align:center;position:relative}
+  .pill{display:inline-flex;align-items:center;gap:9px;padding:7px 16px;border-radius:999px;font-size:13px;
+    color:var(--muted);border:1px solid var(--border-strong);background:var(--panel);margin-bottom:28px}
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:#3ee6a0;box-shadow:0 0 10px #3ee6a0}
+  h1.title{font-size:clamp(42px,7vw,82px);font-weight:800;letter-spacing:-.04em}
+  h1.title .grad{background:linear-gradient(120deg,#a78bff 5%,#22d3ee 50%,#ff7eb6 95%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .subtitle{max-width:720px;margin:24px auto 0;font-size:clamp(17px,2.2vw,21px);color:var(--muted)}
+  .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:38px}
+  .hero-cta .btn{padding:13px 24px;font-size:15px}
+  .badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:40px}
+  .badge{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:6px 13px;border-radius:8px;
+    background:var(--panel);border:1px solid var(--border)}
+  .badge b{color:var(--brand-2)}
+
+  /* ---------- section ---------- */
+  section{padding:84px 0;position:relative}
+  .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12.5px;font-weight:700;
+    color:var(--brand-2);margin-bottom:14px}
+  .sec-head{max-width:720px;margin:0 auto 54px;text-align:center}
+  .sec-head h2{font-size:clamp(30px,4.5vw,46px);font-weight:800}
+  .sec-head p{margin-top:16px;color:var(--muted);font-size:17px}
+
+  /* ---------- stats ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:26px 22px;text-align:center}
+  .stat .n{font-size:34px;font-weight:800;background:linear-gradient(120deg,#a78bff,#22d3ee);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .l{color:var(--muted);font-size:13.5px;margin-top:6px}
+  @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* ---------- feature grid ---------- */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px;
+    transition:.25s;position:relative;overflow:hidden}
+  .card:hover{transform:translateY(-4px);border-color:var(--border-strong);background:var(--panel-strong)}
+  .card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;opacity:0;transition:.25s;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude}
+  .card:hover::before{opacity:.7}
+  .ico{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;margin-bottom:18px;
+    background:linear-gradient(135deg,rgba(124,92,255,.25),rgba(34,211,238,.18));border:1px solid var(--border-strong)}
+  .card h3{font-size:19px;margin-bottom:9px}
+  .card p{color:var(--muted);font-size:14.5px}
+  @media(max-width:900px){.features{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:600px){.features{grid-template-columns:1fr}}
+
+  /* ---------- architecture diagram ---------- */
+  .diagram{background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:40px 32px;overflow-x:auto}
+
+  /* ---------- evolution loop ---------- */
+  .evo{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
+  .evo-ring{position:relative;aspect-ratio:1;max-width:420px;margin:0 auto;width:100%}
+  .evo-center{position:absolute;inset:32%;border-radius:50%;display:grid;place-items:center;text-align:center;
+    background:radial-gradient(circle,rgba(124,92,255,.25),rgba(34,211,238,.08));border:1px solid var(--border-strong);
+    font-weight:800;font-size:15px}
+  .evo-node{position:absolute;width:34%;text-align:center;padding:14px 10px;border-radius:14px;
+    background:var(--panel-strong);border:1px solid var(--border-strong)}
+  .evo-node .e{font-size:22px}
+  .evo-node .t{font-weight:700;font-size:14px;margin-top:4px}
+  .evo-node .d{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .evo-node.n1{top:0;left:50%;transform:translateX(-50%)}
+  .evo-node.n2{bottom:6%;left:0}
+  .evo-node.n3{bottom:6%;right:0}
+  .evo-ring svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .evo-side h3{font-size:24px;margin-bottom:14px}
+  .evo-side p{color:var(--muted);margin-bottom:20px}
+  .evo-targets{display:flex;flex-wrap:wrap;gap:10px}
+  .target{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;padding:9px 14px;border-radius:10px;
+    background:var(--panel);border:1px solid var(--border)}
+  @media(max-width:820px){.evo{grid-template-columns:1fr}}
+
+  /* ---------- registries / ecosystem ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .chip{font-family:var(--mono);font-size:13px;padding:10px 16px;border-radius:10px;background:var(--panel);
+    border:1px solid var(--border);color:var(--muted);transition:.2s}
+  .chip:hover{color:var(--text);border-color:var(--border-strong);transform:translateY(-2px)}
+  .chip b{color:var(--brand-2)}
+
+  /* ---------- benchmarks ---------- */
+  .bench{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .bench span{padding:9px 18px;border-radius:999px;font-size:14px;font-weight:600;
+    background:linear-gradient(135deg,rgba(124,92,255,.14),rgba(34,211,238,.1));border:1px solid var(--border-strong)}
+
+  /* ---------- quickstart ---------- */
+  .qs{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .code{background:#080a17;border:1px solid var(--border);border-radius:16px;overflow:hidden}
+  .code .bar{display:flex;align-items:center;gap:7px;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)}
+  .code .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .code .bar .f{font-family:var(--mono);font-size:12px;color:var(--muted-2);margin-left:8px}
+  .code pre{margin:0;padding:20px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.75;color:#c7d0f5}
+  .code .c{color:#5f6b95}.code .k{color:#ff7eb6}.code .s{color:#7fe7c4}.code .v{color:#a78bff}
+  @media(max-width:820px){.qs{grid-template-columns:1fr}}
+
+  /* ---------- CTA banner ---------- */
+  .cta-banner{background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(34,211,238,.12));
+    border:1px solid var(--border-strong);border-radius:24px;padding:56px 40px;text-align:center}
+  .cta-banner h2{font-size:clamp(28px,4vw,40px);font-weight:800}
+  .cta-banner p{color:var(--muted);margin:14px auto 30px;max-width:540px}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--border);padding:44px 0;color:var(--muted-2);font-size:14px}
+  .foot-inner{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .foot-links{display:flex;gap:22px}
+  .foot-links a{color:var(--muted);transition:.2s}.foot-links a:hover{color:var(--text)}
+
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="grid-fx"></div>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top"><span class="mark">🧬</span> Autogenesis</a>
+    <div class="nav-links">
+      <a href="#features" data-i18n="nav_features">Features</a>
+      <a href="#architecture" data-i18n="nav_arch">Architecture</a>
+      <a href="#evolution" data-i18n="nav_evo">Self-Evolution</a>
+      <a href="#benchmarks" data-i18n="nav_bench">Benchmarks</a>
+      <a href="#quickstart" data-i18n="nav_start">Quick Start</a>
+    </div>
+    <div class="nav-actions">
+      <div class="lang" role="group" aria-label="language">
+        <button data-lang="en" class="active">EN</button>
+        <button data-lang="zh">中文</button>
+      </div>
+      <a class="btn primary" href="https://github.com/DVampire/Autogenesis" target="_blank" rel="noopener">
+        <span>★</span> GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="pill"><span class="dot"></span><span data-i18n="hero_pill">Self-evolving multi-agent framework</span></span>
+    <h1 class="title" data-i18n="hero_title_html">Agents that <span class="grad">evolve themselves</span></h1>
+    <p class="subtitle" data-i18n="hero_sub">A MetaAgent orchestrates specialized sub-agents to solve tasks — while generator, evaluator, and optimizer agents continuously grow the tool, skill, and agent ecosystem.</p>
+    <div class="hero-cta">
+      <a class="btn primary" href="#quickstart" data-i18n="hero_cta1">🚀 Get Started</a>
+      <a class="btn" href="#architecture" data-i18n="hero_cta2">Explore Architecture →</a>
+    </div>
+    <div class="badges">
+      <span class="badge">Python <b>3.12</b></span>
+      <span class="badge">License <b>MIT</b></span>
+      <span class="badge"><b>Multi-Agent</b> Orchestration</span>
+      <span class="badge"><b>Hot-plug</b> Extensions</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ STATS ============ -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="stats reveal">
+      <div class="stat"><div class="n">10+</div><div class="l" data-i18n="stat_reg">Component registries</div></div>
+      <div class="stat"><div class="n">4</div><div class="l" data-i18n="stat_sa">Specialist sub-agents</div></div>
+      <div class="stat"><div class="n">3×</div><div class="l" data-i18n="stat_evo">Evolution roles per component</div></div>
+      <div class="stat"><div class="n">8+</div><div class="l" data-i18n="stat_bench">Built-in benchmarks</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="feat_eyebrow">Why Autogenesis</div>
+      <h2 data-i18n="feat_h">Built to orchestrate — and to improve itself</h2>
+      <p data-i18n="feat_p">A clean, registry-driven core where every capability is a hot-pluggable component, and dedicated agents grow that ecosystem over time.</p>
+    </div>
+    <div class="features">
+      <div class="card reveal"><div class="ico">🧠</div><h3 data-i18n="f1_h">MetaAgent Orchestration</h3><p data-i18n="f1_p">A planning agent decomposes tasks, dispatches subtasks over an Agent Bus, executes in parallel, and evaluates — looping until done.</p></div>
+      <div class="card reveal"><div class="ico">🧬</div><h3 data-i18n="f2_h">Self-Evolution Loop</h3><p data-i18n="f2_p">Generator, evaluator, and optimizer agents create, assess, and refine tools, skills, agents, and environments automatically.</p></div>
+      <div class="card reveal"><div class="ico">🔌</div><h3 data-i18n="f3_h">Hot-plug Extensions</h3><p data-i18n="f3_p">The ExtensionManager layers evolved components on top of built-ins at runtime — versioned, archived, and instantly rollback-able.</p></div>
+      <div class="card reveal"><div class="ico">🗂️</div><h3 data-i18n="f4_h">Registry-driven Core</h3><p data-i18n="f4_p">Tools, agents, prompts, skills, benchmarks, hooks, constraints, memory — each self-registers via a clean mmengine registry.</p></div>
+      <div class="card reveal"><div class="ico">🔭</div><h3 data-i18n="f5_h">Live Trace UI</h3><p data-i18n="f5_p">Watch every agent step through a task in real time in your browser, with full run artifacts written to the work directory.</p></div>
+      <div class="card reveal"><div class="ico">🏆</div><h3 data-i18n="f6_h">Benchmark Suite</h3><p data-i18n="f6_p">Ships with AIME, GPQA, GSM8K, HLE, LeetCode, DeepWeb and more — datasets-first with automatic HuggingFace fallback.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section id="architecture">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="arch_eyebrow">Architecture</div>
+      <h2 data-i18n="arch_h">One planner, many specialists</h2>
+      <p data-i18n="arch_p">The MetaAgent plans and dispatches work over the Agent Bus to specialist sub-agents that run in parallel and return results for evaluation.</p>
+    </div>
+
+    <figure class="diagram reveal" style="margin:0;text-align:center">
+      <img id="arch-img" src="assets/arch.png" alt="Autogenesis architecture diagram"
+           style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:12px" loading="lazy">
+    </figure>
+  </div>
+</section>
+
+<!-- ============ EVOLUTION ============ -->
+<section id="evolution">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="evo_eyebrow">The Evolution Engine</div>
+      <h2 data-i18n="evo_h">A framework that rewrites itself</h2>
+      <p data-i18n="evo_p">For every kind of component, three agents form a closed improvement loop — new capabilities are born, judged, and refined without touching the immutable core.</p>
+    </div>
+
+    <div class="evo reveal">
+      <div class="evo-ring">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <marker id="ah" markerWidth="7" markerHeight="7" refX="4" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#8b7bff"/>
+            </marker>
+          </defs>
+          <g fill="none" stroke="#8b7bff" stroke-width="1.4" marker-end="url(#ah)" opacity=".8">
+            <path d="M62,22 A40,40 0 0 1 78,66"/>
+            <path d="M70,80 A40,40 0 0 1 30,80"/>
+            <path d="M22,66 A40,40 0 0 1 38,22"/>
+          </g>
+        </svg>
+        <div class="evo-node n1"><div class="e">✨</div><div class="t" data-i18n="evo_g">Generator</div><div class="d" data-i18n="evo_g_d">creates new components</div></div>
+        <div class="evo-node n2"><div class="e">⚖️</div><div class="t" data-i18n="evo_e">Evaluator</div><div class="d" data-i18n="evo_e_d">assesses quality</div></div>
+        <div class="evo-node n3"><div class="e">🔧</div><div class="t" data-i18n="evo_o">Optimizer</div><div class="d" data-i18n="evo_o_d">refines the code</div></div>
+        <div class="evo-center" data-i18n="evo_center">Evolving Ecosystem</div>
+      </div>
+
+      <div class="evo-side">
+        <h3 data-i18n="evo_side_h">Immutable core, mutable everything-else</h3>
+        <p data-i18n="evo_side_p">Hand-written built-ins live in <code>src/</code> and never change. Evolved components live in an external <code>extension/</code> tree, loaded and versioned by the ExtensionManager — so the system can grow safely and roll back instantly.</p>
+        <div class="evo-targets">
+          <span class="target">🧩 <span data-i18n="evo_t1">Tools</span></span>
+          <span class="target">📘 <span data-i18n="evo_t2">Skills</span></span>
+          <span class="target">🤖 <span data-i18n="evo_t3">Agents</span></span>
+          <span class="target">🌐 <span data-i18n="evo_t4">Environments</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ECOSYSTEM / REGISTRIES ============ -->
+<section id="registries" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="reg_eyebrow">Registry-driven</div>
+      <h2 data-i18n="reg_h">Every capability is a component</h2>
+      <p data-i18n="reg_p">Each module self-registers with an mmengine registry — discoverable, swappable, and evolvable.</p>
+    </div>
+    <div class="chips reveal">
+      <span class="chip"><b>@TOOL</b></span>
+      <span class="chip"><b>@AGENT</b></span>
+      <span class="chip"><b>@PROMPT</b></span>
+      <span class="chip"><b>@SKILL</b></span>
+      <span class="chip"><b>@BENCHMARK</b></span>
+      <span class="chip"><b>@DATASET</b></span>
+      <span class="chip"><b>@HOOK</b></span>
+      <span class="chip"><b>@CONSTRAINT</b></span>
+      <span class="chip"><b>@ENVIRONMENT</b></span>
+      <span class="chip"><b>@MEMORY_SYSTEM</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENCHMARKS ============ -->
+<section id="benchmarks">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="bench_eyebrow">Evaluate everything</div>
+      <h2 data-i18n="bench_h">Benchmarks out of the box</h2>
+      <p data-i18n="bench_p">Datasets are read locally first, then snapshot-downloaded from HuggingFace on demand.</p>
+    </div>
+    <div class="bench reveal">
+      <span>AIME 24/25</span><span>GPQA</span><span>GSM8K</span><span>HLE</span>
+      <span>LeetCode</span><span>DeepWeb</span><span>ProgramBench</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUICK START ============ -->
+<section id="quickstart">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="qs_eyebrow">Quick Start</div>
+      <h2 data-i18n="qs_h">Up and running in minutes</h2>
+      <p data-i18n="qs_p">Set up the environment, then let the MetaAgent run a task to completion.</p>
+    </div>
+    <div class="qs reveal">
+      <div class="code">
+        <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="f">setup.sh</span></div>
+<pre><span class="c"># 1 · create the Python environment</span>
+conda create -n agent python=<span class="v">3.12</span>
+conda activate agent
+pip install -e .
+
+<span class="c"># 2 · browser automation</span>
+pip install playwright <span class="k">&amp;&amp;</span> playwright install
+pip install "browser-use[cli]"</pre>
+      </div>
+      <div class="code">
+        <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="f">run.sh</span></div>
+<pre><span class="c"># run the default task</span>
+python examples/run_meta_agent.py
+
+<span class="c"># run an inline task</span>
+python examples/run_meta_agent.py <span class="k">\</span>
+  --task <span class="s">"Reverse a string + add unit tests"</span>
+
+<span class="c"># run from a task document</span>
+python examples/run_meta_agent.py <span class="k">\</span>
+  --task-file examples/tasks/<span class="s">qsar_egfr_experiment.html</span></pre>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--muted);margin-top:26px;font-size:14.5px">
+      <span data-i18n="qs_note">Full setup (Vault secret manager, Python env) is documented in</span>
+      <a href="https://github.com/DVampire/Autogenesis/blob/main/scripts/INSTALL.md" target="_blank" rel="noopener" style="color:var(--brand-2);font-weight:600">scripts/INSTALL.md →</a>
+    </p>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-banner reveal">
+      <h2 data-i18n="cta_h">Ready to build self-evolving agents?</h2>
+      <p data-i18n="cta_p">Clone the repo, run the MetaAgent, and watch the ecosystem grow.</p>
+      <div class="hero-cta">
+        <a class="btn primary" href="https://github.com/DVampire/Autogenesis" target="_blank" rel="noopener" style="padding:13px 26px;font-size:15px">★ <span data-i18n="cta_b1">Star on GitHub</span></a>
+        <a class="btn" href="https://github.com/DVampire/Autogenesis/blob/main/README.md" target="_blank" rel="noopener" style="padding:13px 26px;font-size:15px" data-i18n="cta_b2">Read the Docs →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap foot-inner">
+    <div>
+      <div class="brand" style="font-size:16px"><span class="mark" style="width:26px;height:26px;font-size:14px">🧬</span> Autogenesis</div>
+      <div style="margin-top:8px;font-size:13px" data-i18n="foot_tag">A self-evolving multi-agent framework · MIT License</div>
+    </div>
+    <div class="foot-links">
+      <a href="https://github.com/DVampire/Autogenesis" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/DVampire/Autogenesis/blob/main/README.md" target="_blank" rel="noopener" data-i18n="foot_readme">README</a>
+      <a href="https://github.com/DVampire/Autogenesis/blob/main/README_zh.md" target="_blank" rel="noopener">中文</a>
+      <a href="#top" data-i18n="foot_top">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------------- i18n ---------------- */
+const I18N = {
+  en:{
+    nav_features:"Features", nav_arch:"Architecture", nav_evo:"Self-Evolution", nav_bench:"Benchmarks", nav_start:"Quick Start",
+    hero_pill:"Self-evolving multi-agent framework",
+    hero_title_html:'Agents that <span class="grad">evolve themselves</span>',
+    hero_sub:"A MetaAgent orchestrates specialized sub-agents to solve tasks — while generator, evaluator, and optimizer agents continuously grow the tool, skill, and agent ecosystem.",
+    hero_cta1:"🚀 Get Started", hero_cta2:"Explore Architecture →",
+    stat_reg:"Component registries", stat_sa:"Specialist sub-agents", stat_evo:"Evolution roles per component", stat_bench:"Built-in benchmarks",
+    feat_eyebrow:"Why Autogenesis", feat_h:"Built to orchestrate — and to improve itself",
+    feat_p:"A clean, registry-driven core where every capability is a hot-pluggable component, and dedicated agents grow that ecosystem over time.",
+    f1_h:"MetaAgent Orchestration", f1_p:"A planning agent decomposes tasks, dispatches subtasks over an Agent Bus, executes in parallel, and evaluates — looping until done.",
+    f2_h:"Self-Evolution Loop", f2_p:"Generator, evaluator, and optimizer agents create, assess, and refine tools, skills, agents, and environments automatically.",
+    f3_h:"Hot-plug Extensions", f3_p:"The ExtensionManager layers evolved components on top of built-ins at runtime — versioned, archived, and instantly rollback-able.",
+    f4_h:"Registry-driven Core", f4_p:"Tools, agents, prompts, skills, benchmarks, hooks, constraints, memory — each self-registers via a clean mmengine registry.",
+    f5_h:"Live Trace UI", f5_p:"Watch every agent step through a task in real time in your browser, with full run artifacts written to the work directory.",
+    f6_h:"Benchmark Suite", f6_p:"Ships with AIME, GPQA, GSM8K, HLE, LeetCode, DeepWeb and more — datasets-first with automatic HuggingFace fallback.",
+    arch_eyebrow:"Architecture", arch_h:"One planner, many specialists",
+    arch_p:"The MetaAgent plans and dispatches work over the Agent Bus to specialist sub-agents that run in parallel and return results for evaluation.",
+    evo_eyebrow:"The Evolution Engine", evo_h:"A framework that rewrites itself",
+    evo_p:"For every kind of component, three agents form a closed improvement loop — new capabilities are born, judged, and refined without touching the immutable core.",
+    evo_g:"Generator", evo_g_d:"creates new components", evo_e:"Evaluator", evo_e_d:"assesses quality", evo_o:"Optimizer", evo_o_d:"refines the code",
+    evo_center:"Evolving Ecosystem",
+    evo_side_h:"Immutable core, mutable everything-else",
+    evo_side_p:"Hand-written built-ins live in <code>src/</code> and never change. Evolved components live in an external <code>extension/</code> tree, loaded and versioned by the ExtensionManager — so the system can grow safely and roll back instantly.",
+    evo_t1:"Tools", evo_t2:"Skills", evo_t3:"Agents", evo_t4:"Environments",
+    reg_eyebrow:"Registry-driven", reg_h:"Every capability is a component",
+    reg_p:"Each module self-registers with an mmengine registry — discoverable, swappable, and evolvable.",
+    bench_eyebrow:"Evaluate everything", bench_h:"Benchmarks out of the box",
+    bench_p:"Datasets are read locally first, then snapshot-downloaded from HuggingFace on demand.",
+    qs_eyebrow:"Quick Start", qs_h:"Up and running in minutes", qs_p:"Set up the environment, then let the MetaAgent run a task to completion.",
+    qs_note:"Full setup (Vault secret manager, Python env) is documented in",
+    cta_h:"Ready to build self-evolving agents?", cta_p:"Clone the repo, run the MetaAgent, and watch the ecosystem grow.",
+    cta_b1:"Star on GitHub", cta_b2:"Read the Docs →",
+    foot_tag:"A self-evolving multi-agent framework · MIT License", foot_readme:"README", foot_top:"Back to top ↑"
+  },
+  zh:{
+    nav_features:"特性", nav_arch:"架构", nav_evo:"自进化", nav_bench:"基准测试", nav_start:"快速开始",
+    hero_pill:"自进化的多智能体框架",
+    hero_title_html:'会<span class="grad">自我进化</span>的智能体',
+    hero_sub:"由 MetaAgent 编排各领域专精子智能体来完成任务；同时 generator、evaluator、optimizer 智能体持续壮大工具、技能与智能体生态。",
+    hero_cta1:"🚀 快速开始", hero_cta2:"探索架构 →",
+    stat_reg:"组件注册表", stat_sa:"专精子智能体", stat_evo:"每类组件的进化角色", stat_bench:"内置基准测试",
+    feat_eyebrow:"为什么选择 Autogenesis", feat_h:"既能编排，也能自我改进",
+    feat_p:"简洁、以注册表驱动的内核：每项能力都是可热插拔的组件，并由专门的智能体让整个生态随时间不断成长。",
+    f1_h:"MetaAgent 编排", f1_p:"规划智能体拆解任务、通过 Agent Bus 分发子任务、并行执行并评估，循环直至完成。",
+    f2_h:"自进化闭环", f2_p:"generator、evaluator、optimizer 智能体自动创建、评估并优化工具、技能、智能体与环境。",
+    f3_h:"热插拔扩展", f3_p:"ExtensionManager 在运行时将进化出的组件叠加到内置组件之上——带版本、可归档、可即时回滚。",
+    f4_h:"注册表驱动内核", f4_p:"工具、智能体、提示词、技能、基准、钩子、约束、记忆——都通过简洁的 mmengine 注册表自注册。",
+    f5_h:"实时 Trace UI", f5_p:"在浏览器中实时观看每个智能体逐步执行任务，完整运行产物写入工作目录。",
+    f6_h:"基准测试套件", f6_p:"内置 AIME、GPQA、GSM8K、HLE、LeetCode、DeepWeb 等——本地数据优先，自动回退到 HuggingFace 下载。",
+    arch_eyebrow:"架构", arch_h:"一个规划者，众多专家",
+    arch_p:"MetaAgent 负责规划，并通过 Agent Bus 将工作分发给并行运行的专精子智能体，再收集结果进行评估。",
+    evo_eyebrow:"进化引擎", evo_h:"一个会改写自己的框架",
+    evo_p:"对每一类组件，三个智能体构成闭环改进——在不触碰不可变内核的前提下，让新能力被创造、评判并打磨。",
+    evo_g:"生成器", evo_g_d:"创建新组件", evo_e:"评估器", evo_e_d:"评估质量", evo_o:"优化器", evo_o_d:"打磨代码",
+    evo_center:"进化中的生态",
+    evo_side_h:"内核不可变，其余皆可变",
+    evo_side_p:"手写的内置组件位于 <code>src/</code>，永不变动。进化出的组件位于外部 <code>extension/</code> 目录，由 ExtensionManager 加载并版本化——因此系统能安全成长，并可即时回滚。",
+    evo_t1:"工具", evo_t2:"技能", evo_t3:"智能体", evo_t4:"环境",
+    reg_eyebrow:"注册表驱动", reg_h:"每项能力都是一个组件",
+    reg_p:"每个模块都通过 mmengine 注册表自注册——可发现、可替换、可进化。",
+    bench_eyebrow:"全面评测", bench_h:"开箱即用的基准测试",
+    bench_p:"数据集优先从本地读取，需要时再从 HuggingFace 快照下载。",
+    qs_eyebrow:"快速开始", qs_h:"几分钟即可跑起来", qs_p:"配置好环境，让 MetaAgent 把任务跑到完成。",
+    qs_note:"完整安装（Vault 密钥管理器、Python 环境）详见",
+    cta_h:"准备好构建自进化智能体了吗？", cta_p:"克隆仓库，运行 MetaAgent，见证生态不断成长。",
+    cta_b1:"在 GitHub 点亮 Star", cta_b2:"阅读文档 →",
+    foot_tag:"一个自进化的多智能体框架 · MIT 许可证", foot_readme:"README", foot_top:"回到顶部 ↑"
+  }
+};
+
+function applyLang(lang){
+  const dict = I18N[lang] || I18N.en;
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key = el.getAttribute("data-i18n");
+    if(dict[key] == null) return;
+    if(key.endsWith("_html") || dict[key].includes("<")) el.innerHTML = dict[key];
+    else el.textContent = dict[key];
+  });
+  document.querySelectorAll(".lang button").forEach(b=>{
+    b.classList.toggle("active", b.dataset.lang === lang);
+  });
+  const archImg = document.getElementById("arch-img");
+  if(archImg) archImg.src = lang === "zh" ? "assets/arch_zh.png" : "assets/arch.png";
+  try{ localStorage.setItem("ae_lang", lang); }catch(e){}
+}
+
+document.querySelectorAll(".lang button").forEach(b=>{
+  b.addEventListener("click", ()=>applyLang(b.dataset.lang));
+});
+
+let saved = null;
+try{ saved = localStorage.getItem("ae_lang"); }catch(e){}
+if(!["en","zh"].includes(saved)){
+  saved = (navigator.language||"").toLowerCase().startsWith("zh") ? "zh" : "en";
+}
+applyLang(saved);
+
+/* ---------------- scroll reveal ---------------- */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+},{threshold:.12});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

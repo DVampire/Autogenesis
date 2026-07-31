@@ -1,0 +1,155 @@
+{
+  "id": "",
+  "name": "Route by Condition",
+  "description": "Route the query to one of two agents by a ${query} test.",
+  "version": "1.0.0",
+  "document_version": 2,
+  "nodes": [
+    {
+      "id": "in_q",
+      "type": "input",
+      "step_type": null,
+      "target": null,
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "query",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "The routing input.",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "br",
+      "type": "step",
+      "step_type": "branch",
+      "target": null,
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {
+        "condition": "${query}"
+      },
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 260,
+        "y": 0
+      }
+    },
+    {
+      "id": "a",
+      "type": "step",
+      "step_type": "agent",
+      "target": "general_agent",
+      "task": "Handle this request: ${query}",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "",
+      "parent": "br",
+      "slot": "then",
+      "position": {
+        "x": 520,
+        "y": -80
+      }
+    },
+    {
+      "id": "b",
+      "type": "step",
+      "step_type": "agent",
+      "target": "code_agent",
+      "task": "Write code for: ${query}",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "",
+      "parent": "br",
+      "slot": "else",
+      "position": {
+        "x": 520,
+        "y": 80
+      }
+    },
+    {
+      "id": "out_r",
+      "type": "output",
+      "step_type": null,
+      "target": null,
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "result",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "${br}",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 800,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "br",
+      "target": "a",
+      "param": "task",
+      "source_port": "true"
+    },
+    {
+      "id": "e2",
+      "source": "br",
+      "target": "b",
+      "param": "task",
+      "source_port": "false"
+    }
+  ],
+  "notes": [],
+  "published": false,
+  "program_hash": ""
+}

@@ -1,0 +1,15 @@
+memory_generate_agent = dict(
+    name="memory_generate_agent",
+    type="MemoryGenerateAgent",
+    description="An agent that generates a new memory system Python class from a description.",
+    model_name="google/gemini-3.1-pro-preview",
+    prompt_name="memory_generate_agent",
+    memory_name="file_system_memory",
+    max_actions=10,
+    max_step=30,
+    max_token=1000000,
+    timeout=1800,
+    review_steps=5,
+    enable_evolving=False,
+    use_memory=True,
+)

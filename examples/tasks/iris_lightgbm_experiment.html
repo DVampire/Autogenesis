@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="iris_lightgbm_experiment">
+  <meta name="description" content="Closed-loop auto-research experiment classifying Iris species with LightGBM, where each of five rounds is designed from the previous round's observed results, delivered as a self-contained scientific report">
+  <meta name="version" content="2.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Run a closed-loop machine-learning research experiment on the classic Iris
+dataset: predict the flower species (setosa, versicolor, virginica) from its
+four morphological measurements — a multi-class classification task — using
+LightGBM. This is NOT a one-shot script that runs five preset configurations.
+It is an iterative auto-research loop: run one round, look at the actual results,
+diagnose what is limiting the model, form a hypothesis for how to improve it,
+change the code/parameters accordingly, and only then run the next round. Deliver
+an HTML report that reads as a scientific write-up of the experiment, including
+the round-by-round reasoning that drove each change.
+</objective>
+
+<requirements>
+- Use the real, publicly available Iris dataset (e.g. from scikit-learn's
+  bundled data or a public CSV), and confirm it loaded with the expected sample
+  and class counts before modeling.
+- Frame the problem as multi-class classification (three species) with LightGBM.
+  Hold out a single fixed test set ONCE at the start so every round is scored on
+  the same unseen data and rounds are directly comparable.
+- Run the experiment as a genuine closed loop of exactly 5 rounds. Round 1 is a
+  baseline. For every subsequent round you MUST first have the previous round's
+  actual measured results in hand (metrics, and diagnostics such as the confusion
+  matrix, train-vs-test gap, per-class errors, or feature importance), diagnose
+  what those results reveal, and let that diagnosis determine the change you make
+  next. Do NOT hard-code all five configurations up front and run them in a
+  single pass — the choice of what to change in round N must be driven by what
+  round N-1 actually showed.
+- Report the same core metrics every round (e.g. held-out accuracy and macro-F1)
+  so the progression is visible and comparable.
+- For EACH round, the report must include a short "decision log": what the
+  previous round's results showed (the observation), what you therefore
+  hypothesized would help and why, what you changed, the resulting metrics, and
+  whether the hypothesis was confirmed or refuted. It is fine — and honest — for
+  a round to fail to improve; say so and explain what you learned.
+- Make use of the available skills where they strengthen the experiment's
+  quality (e.g. presenting the methodology and reasoning clearly).
+- Write every figure as a local PNG beneath `figures/` in the session workspace.
+  Results JSON files must store only relative image paths (never base64 or
+  `data:` URIs). Deliver `experiment_report.html` beside `figures/`, using
+  relative image paths so the report and its artifacts remain inspectable and
+  portable together.
+</requirements>
+
+<acceptance>
+```
+An `experiment_report.html` plus local PNG figures under `figures/`; the report
+uses relative image paths and the result JSON contains no base64 image payloads.
+
+The report demonstrates, with actual computed values:
+  - the real Iris dataset was loaded and prepared for classification, with the
+    sample and class counts stated
+  - 5 rounds run as a closed loop on one fixed held-out test set, with comparable
+    metrics (e.g. accuracy / macro-F1) each round
+  - for every round after the first, a decision log that ties the change made to
+    a specific observation from the previous round's results (not a pre-planned
+    fixed pipeline)
+  - a best-model analysis (e.g. feature importance, confusion matrix) and an
+    honest discussion of limitations, including rounds that did not help
+```
+</acceptance>
+</div>
+
+</body>
+</html>

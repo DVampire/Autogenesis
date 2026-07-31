@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="gaia_memory_evolution">
+  <meta name="description" content="Solve real GAIA task 9e1fc53b and give the system the retention policy it lacks: generate a constraint-preserving memory, then carry that policy into the memory the agents are actually bound to">
+  <meta name="version" content="2.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Answer a real task from the GAIA benchmark — validation task
+`9e1fc53b-46ff-49a1-9d05-9e6faac34cc5`, Level 3.
+
+The verbatim GAIA question:
+
+> A 5-man group made up of one tank, one healer, and three DPS is doing a dungeon
+> that was just released in World of Warcraft. Two are plate wearers and two are
+> cloth wearers. At the final boss, both the tank and the healer are casting holy
+> spells. Ice and fire are being used, each one by a different DPS. A bear from
+> the group is attacking the boss. Metamorphosis is cast. The Kilt of the
+> Forgotten One drops as loot, but no one can use it. If all classes were using
+> their class abilities and all classes are unique, what are the five classes in
+> the group in alphabetical order separated by commas?
+
+This is a **constraint-satisfaction** puzzle. No single clue identifies a class;
+the solution exists only when **every** clue is held at once, and each clue must
+be verified against an external source rather than recalled.
+
+The system does not have a memory system suited to this shape of task, and this
+run is to give it one.
+</objective>
+
+<requirements>
+- Every clue must be verified with a `web_searcher_tool` query and its source
+  cited before it counts. Answering from memorised game knowledge is not
+  acceptable — the GAIA annotator used a browser and a search engine over 20
+  steps.
+- Handle one clue per step. Do not batch clues into a single pass.
+- Deliver evolved capabilities as extension components. Never modify `src/` or
+  any built-in package file.
+- Do not hard-code the answer anywhere; it must come out of the deduction.
+</requirements>
+
+<interface>
+The memory system the sub-agents are bound to is `file_system_memory`, a
+`TieredMemory`. Its retention policy is **chronological**:
+
+| Tier | Rule |
+|---|---|
+| `recent_fetch = 10` | only the last 10 records are injected verbatim |
+| `recent_max = 30` | beyond this the oldest 10 records are compacted into a summary |
+| `working_max = 10` | summaries are a bounded queue; the oldest is dropped |
+
+Every record ages out on the same schedule regardless of what it contains. A
+verified constraint and an incidental observation decay identically.
+
+That is the gap this task addresses: a constraint-satisfaction run needs
+retention keyed on **what a record is** — a confirmed constraint must never
+degrade while the puzzle is open — not on **how old it is**. Chronological
+tiering does not provide that, and no amount of re-prompting the agent supplies
+it, because the policy lives in the memory resource.
+</interface>
+
+<acceptance>
+```
+final answer == "Death Knight, Hunter, Paladin, Priest, Warlock"   ⇒ pass
+anything else                                                       ⇒ fail
+```
+A new memory component must exist under `extension/memory/`, and the memory the
+agents are actually bound to must end the run carrying the constraint-preserving
+policy.
+</acceptance>
+
+<plan>
+This is orchestration work. Do NOT explore the repository yourself with
+`list_dir_tool` / `read_file_tool` — dispatch sub-agents. Your FIRST action is
+Round 1.
+
+- **Round 1 — dispatch `memory_generate_agent`** with `target_name` set to
+  `constraint_memory`. Invoke `memory_creator_skill` ONCE, then write the file
+  immediately — do not re-read the skill. The spec, so nothing has to be derived:
+  - single file `{extension_root}/memory/constraint_memory.py`
+  - class `ConstraintMemory`, subclassing `TieredMemory`, registered via
+    `@MEMORY_SYSTEM.register_module(force=True)`
+  - required fields, copied verbatim:
+```
+    name: str = Field(default="constraint_memory")
+    description: str = Field(default="Retains confirmed constraints verbatim, alongside chronological tiers.")
+    enable_evolving: bool = Field(default=True)
+```
+  - override `_render(self, state)` so the returned text has **two** sections:
+    a `## Confirmed constraints` block listing every record whose text marks it
+    as an established/verified fact, kept **verbatim and unbounded**, and below
+    it the ordinary recent-records block. Constraints must not be truncated by
+    recency.
+  - verify with `python -m py_compile` and put the file path in
+    `done_tool.reasoning` so the registration hook picks it up.
+
+- **Round 2 — dispatch `memory_evaluate_agent`** with `target_name` set to
+  `constraint_memory` to score it across the five dimensions, telling it the
+  objective criterion: a confirmed constraint established early must still be
+  present verbatim after many later records, and ordinary recency behaviour must
+  still work.
+
+- **Round 3 — carry the policy into the bound memory.** `constraint_memory` is
+  registered, but the sub-agents are bound to `file_system_memory` by
+  configuration, so a newly generated component under a new name is not yet in
+  play. Dispatch **`memory_optimize_agent`** with `target_name` set to
+  `file_system_memory`, citing `constraint_memory` as the reference
+  implementation. Give it the same two-section retention policy, keep the class
+  name, `@MEMORY_SYSTEM.register_module`, and existing method signatures intact,
+  and bump the version. Re-registering under the same name makes the new version
+  live for the next dispatched sub-agent.
+
+- **Round 4 — dispatch `general_agent`** to solve the puzzle with the evolved
+  memory live: one clue per step, each verified by `web_searcher_tool` with its
+  source cited, and marked clearly as a confirmed constraint so the memory
+  retains it. Then restate every constraint verbatim and give the five-class
+  answer. Require the restatement, the step count, and the answer.
+
+- **Round 5 — judge and act with `evolution_tool`.**
+  - constraints all intact and the answer matches → **accepted → commit**;
+    record `list_versions` for both memory components.
+  - the evolved `file_system_memory` lost a constraint or broke ordinary
+    behaviour → **rejected → rollback** it to the prior version, then say what
+    regressed.
+
+- **Round 6 — call `done_tool`** with: the final answer and whether it matches
+  `Death Knight, Hunter, Paladin, Priest, Warlock`; the two memory components
+  and what each was for (generated vs optimized); the evaluator's verdict; the
+  step count of Round 4; and whether the change was committed or rolled back.
+</plan>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="text_stats_skill_optimize">
+  <meta name="description" content="Optimize text_stats_skill — add reading-time estimate">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Improve the existing `text_stats_skill` so it also guides the agent to estimate
+reading time, in addition to word/character/line counts. Deliver the change as an
+extension component (do not modify `src/`).
+</objective>
+
+<requirements>
+- Keep the existing three metrics (words, characters, lines).
+- Add a reading-time estimate step (assume ~200 words per minute; round to one decimal minute).
+- Update the output format and the worked example to include reading time.
+- Preserve the skill's name and overall structure.
+</requirements>
+
+<acceptance>
+```
+Given a 400-word text  →  words=400, ..., reading_time≈2.0 min
+```
+</acceptance>
+</div>
+
+</body>
+</html>

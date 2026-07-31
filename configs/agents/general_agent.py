@@ -1,0 +1,16 @@
+general_agent = dict(
+    name = "general_agent",
+    type = "Agent",
+    description = "An iterative agent that reasons and acts by using tools, skills, and direct responses to accomplish tasks accurately, safely, and efficiently.",
+    model_name = "google/gemini-3.1-pro-preview",
+    prompt_name = "general_agent",
+    memory_name = "file_system_memory",
+    max_actions = 10,
+    max_step = 50,
+    max_token = 1000000,
+    timeout = 1800,
+    review_steps = 5,
+    log_max_length = 1000,
+    enable_evolving = False,
+    use_memory = False,
+)

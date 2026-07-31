@@ -1,0 +1,174 @@
+:root {
+  --ground:      #0E1210;
+  --surface:     #141B12;
+  --surface-2:   #1B2418;
+  --surface-3:   #222C1E;
+  --text:        #C8DDB8;
+  --text-mid:    #6A8E5C;
+  --text-faint:  #2E4428;
+  --green:       #5BAD78;
+  --amber:       #CFA040;
+  --red:         #D45E3E;
+  --blue:        #5E93C0;
+  --border:      #243220;
+  --border-hi:   #384F2E;
+  --green-bg:  rgba(91,173,120,0.10);
+  --amber-bg:  rgba(207,160,64,0.10);
+  --gray-bg:   rgba(46,68,40,0.35);
+  --mono: 'Courier New', Courier, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--mono);
+  background: var(--ground);
+  color: var(--text);
+  line-height: 1.65;
+  padding: 40px 28px 100px;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =====================================================
+   WRAPPER — div.task (mirrors div.system / div.user)
+   ===================================================== */
+div.task {
+  max-width: 1000px;
+  margin: 0 auto 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  counter-reset: section;
+}
+div.task::before {
+  display: block;
+  content: "TASK";
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--green);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+}
+
+/* =====================================================
+   SECTION BLOCKS — custom tags + div, numbered
+   ===================================================== */
+div.task > * {
+  display: block;
+  background: var(--surface-2);
+  border-radius: 2px;
+  border-left: 2px solid var(--border-hi);
+  padding: 14px 16px;
+  counter-increment: section;
+  cursor: pointer;
+}
+
+/* shared label styling; content is set generically here and overridden per
+   section type below (content + styling are independent properties, so the
+   styling still applies to the per-tag overrides) */
+div.task > *::before {
+  display: block;
+  content: counter(section, decimal-leading-zero);
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+/* div.class children label by class (generic fallback) */
+div.task > div::before { content: counter(section, decimal-leading-zero) "  \00B7  " attr(class); }
+
+/* custom-tag children label by role (mirrors prompt.css per-tag rules) */
+div.task > objective::before    { content: counter(section, decimal-leading-zero) "  \00B7  objective"; }
+div.task > requirements::before { content: counter(section, decimal-leading-zero) "  \00B7  requirements"; }
+div.task > interface::before    { content: counter(section, decimal-leading-zero) "  \00B7  interface"; }
+div.task > acceptance::before   { content: counter(section, decimal-leading-zero) "  \00B7  acceptance"; }
+div.task > plan::before         { content: counter(section, decimal-leading-zero) "  \00B7  plan"; }
+div.task > deliverables::before { content: counter(section, decimal-leading-zero) "  \00B7  deliverables"; }
+div.task > constraints::before  { content: counter(section, decimal-leading-zero) "  \00B7  constraints"; }
+div.task > notes::before        { content: counter(section, decimal-leading-zero) "  \00B7  notes"; }
+
+/* accent the objective */
+div.task > objective { border-left-color: var(--green); background: var(--green-bg); }
+div.task > objective::before { color: var(--green); }
+
+/* collapsed section (toggled by task.js) — clips to just the ::before label */
+div.task > .collapsed,
+div.task > objective.collapsed,
+div.task > *.collapsed { max-height: 3em; overflow: hidden; }
+
+/* =====================================================
+   CONTENT — text, lists, inline code, code blocks, tables
+   (generic, same as prompt's marked-rendered content)
+   ===================================================== */
+div.task > * { color: var(--text); }
+div.task ul, div.task ol { padding-left: 22px; margin: 6px 0; }
+div.task li { margin: 3px 0; }
+div.task li::marker { color: var(--text-mid); }
+div.task strong { color: #E6F2DA; }
+div.task em { color: var(--amber); font-style: normal; }
+div.task a { color: var(--blue); text-decoration: none; border-bottom: 1px dotted var(--blue); }
+
+code {
+  background: var(--gray-bg);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: 12px;
+  color: #E6F2DA;
+}
+
+div.task p { margin: 8px 0; }
+
+/* code blocks — markdown fenced ``` renders to <pre><code>; the div.code
+   module is the equivalent for hand-authored HTML (mirrors prompt.css). */
+div.task pre,
+div.code {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 12px 14px;
+  white-space: pre;
+  overflow-x: auto;
+  counter-increment: none;
+}
+div.code::before { display: none; }
+div.task pre code,
+div.code code { background: none; border: none; padding: 0; }
+
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 6px 0; }
+th, td { border: 1px solid var(--border); padding: 7px 12px; text-align: left; }
+th { background: var(--surface-3); color: var(--green); }
+
+/* =====================================================
+   MARKDOWN FALLBACK — .md tasks render into div.task-doc
+   ===================================================== */
+.task-doc { max-width: 1000px; margin: 0 auto; }
+.task-doc h1, .task-doc h2, .task-doc h3 {
+  color: var(--green);
+  margin-top: 22px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.task-doc h1 { font-size: 18px; }
+.task-doc h2 { font-size: 15px; }
+.task-doc h3 { font-size: 13px; color: var(--text); border-bottom: none; }
+.task-doc p { margin: 10px 0; }
+.task-doc blockquote {
+  border-left: 3px solid var(--amber);
+  background: var(--amber-bg);
+  padding: 8px 14px;
+  color: var(--text-mid);
+}

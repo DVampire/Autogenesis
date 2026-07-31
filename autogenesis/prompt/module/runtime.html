@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="module" content="runtime">
+  <link rel="stylesheet" href="../../visual/css/prompt.css">
+  <script src="../../visual/js/prompt.js"></script>
+</head>
+<body>
+<runtime>
+- Shell commands already run inside this environment — do NOT spend steps probing it
+  (no `conda env list`, `which python`, or version/import checks just to find out).
+- Python: `{{ python_executable }}` (version {{ python_version }}, environment `{{ python_env }}`).
+  Plain `python` and `pip` in a bash command resolve to exactly this interpreter.
+- Platform: {{ platform }}.
+- To learn whether a package is available, import it as part of the real work; if it is
+  missing, install it (`pip install <pkg>`) or choose another approach — do not re-probe.
+</runtime>
+</body>
+</html>

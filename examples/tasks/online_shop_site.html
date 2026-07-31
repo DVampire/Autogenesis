@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="online_shop_site">
+  <meta name="description" content="Build and deploy a large, polished React shopping website with a product recommendation system">
+  <meta name="version" content="4.1.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Build and deploy a **large, polished, production-quality React online shopping website**
+centered on a **product recommendation** experience. It should feel like a real modern
+e-commerce site: visually beautiful, responsive, and feature-complete — a user can
+discover products, get relevant recommendations, manage a cart, check out, and review
+past orders.
+</objective>
+
+<scope>
+- A substantial catalog: at least ~30 products spanning several categories (e.g.
+  electronics, home, fashion, books…), each with a name, price, image, rating,
+  short description, and category.
+- **Real, attractive product images** — actual photos relevant to each product, not
+  placeholder boxes or generic colored SVGs. Fetch real images and **bundle them into the
+  project** so the deployed site is self-contained (no dependency on an external image
+  host at runtime, which breaks when that host is blocked/offline).
+- A real React single-page app with multiple routed pages, not a single static file.
+</scope>
+
+<requirements>
+Discovery & catalog:
+- A home/landing page with hero, featured products, and recommended sections.
+- Category browsing, keyword search, and filtering (by category, price range, rating)
+  plus sorting (price, rating, newest).
+- A product detail page for each product.
+
+Recommendations (the headline feature):
+- A recommendation system that surfaces relevant products — e.g. "related products" and
+  "you may also like" on the product page and cart, plus a personalized/recommended
+  section driven by what the user has viewed or added.
+
+Cart, checkout & orders:
+- Cart: add / remove / change quantity with a running total; persists across reloads.
+- Checkout: a form that places an order and shows a confirmation with an order id.
+- Orders: an order-history view listing past orders with items and totals, persisted so
+  they survive a page reload.
+- A wishlist / favorites feature.
+
+UI/UX quality (must be beautiful and coherent):
+- A consistent, modern design system (typography, spacing, color), responsive across
+  desktop and mobile, with polished components and sensible loading/empty states.
+
+Deployment:
+- Deployed and reachable at a URL.
+</requirements>
+
+<acceptance>
+"Done" means the live site genuinely works and looks good when a real user drives it in
+a browser:
+- The home page and storefront render richly, with product images loading.
+- Search, filtering, sorting, and category browsing work.
+- Recommendation sections appear and show relevant products.
+- Adding products updates the cart and total; checkout produces an order confirmation
+  with an order id; the orders view lists it and it survives a reload.
+- The UI is visually polished and responsive, with no broken images and no JavaScript
+  errors.
+</acceptance>
+</div>
+
+</body>
+</html>

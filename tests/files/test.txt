@@ -1,2 +1,0 @@
-Hello from ECP workflow test!
-This is a test file created by the workflow.

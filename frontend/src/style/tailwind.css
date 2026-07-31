@@ -1,0 +1,90 @@
+/* Tailwind entry + design tokens copied from langflow's style/index.css
+   (:root / .dark core variable blocks). Loaded BEFORE style/index.css so the
+   legacy hand-written styles keep winning during the incremental migration. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 43%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 240 4% 16%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 240 4% 16%;
+    --secondary-hover: 240 6% 90%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 0 0% 0%;
+    --accent-emerald-foreground: 161 94% 23%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 0 0% 0%;
+    --radius: 0.5rem;
+    --canvas: 240 5% 96%;
+    --canvas-dot: 240 5% 65%;
+    --node-selected: 243 75% 59%;
+    --node-ring: 240 6% 90%;
+    --placeholder-foreground: 240 5% 40%;
+    --warning: 48 96.6% 76.7%;
+    --warning-foreground: 240 6% 10%;
+    --warning-text: 0 0% 100%;
+    --error: #991b1b;
+    --error-background: #fef2f2;
+    --error-foreground: #991b1b;
+    --success-background: #f0fdf4;
+    --success-foreground: #14532d;
+    --tooltip: 0 0% 0%;
+    --tooltip-foreground: 0 0% 100%;
+  }
+
+  .dark {
+    --background: 240 6% 10%;
+    --foreground: 0 0% 100%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --popover: 240 6% 10%;
+    --popover-foreground: 0 0% 100%;
+    --card: 240 6% 10%;
+    --card-foreground: 0 0% 100%;
+    --border: 240 5% 26%;
+    --input: 240 5% 34%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --primary-hover: 240 6% 90%;
+    --secondary: 0 0% 0%;
+    --secondary-foreground: 240 6% 90%;
+    --secondary-hover: 240 4% 16%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 100%;
+    --accent-emerald-foreground: 158 64% 52%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 0 0% 100%;
+    --canvas: 0 0% 0%;
+    --canvas-dot: 240 5.3% 26.1%;
+    --node-selected: 234 89% 74%;
+    --node-ring: 240 6% 90%;
+    --placeholder-foreground: 240 4% 63%;
+    --warning: 45.9 96.7% 64.5%;
+    --warning-foreground: 240 6% 10%;
+    --warning-text: 0 0% 100%;
+    --error: #991b1b;
+    --error-background: #450a0a;
+    --error-foreground: #fef2f2;
+    --success-background: #022c22;
+    --success-foreground: #ecfdf5;
+    --tooltip: 0 0% 100%;
+    --tooltip-foreground: 0 0% 0%;
+  }
+}

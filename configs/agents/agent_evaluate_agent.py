@@ -1,0 +1,16 @@
+agent_evaluate_agent = dict(
+    name="agent_evaluate_agent",
+    type="AgentEvaluateAgent",
+    description="An agent that evaluates a generated agent across multiple quality dimensions.",
+    model_name="google/gemini-3.1-pro-preview",
+    prompt_name="agent_evaluate_agent",
+    memory_name="file_system_memory",
+    max_actions=10,
+    max_step=20,
+    max_token=1000000,
+    timeout=1800,
+    review_steps=5,
+    enable_evolving=False,
+    permission_mode="read_only",
+    use_memory=True,
+)

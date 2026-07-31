@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="calculator_tool_evaluate">
+  <meta name="description" content="Evaluate calculator_tool across all dimensions">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Evaluate the `calculator_tool` across all five quality dimensions
+(Correctness, Robustness, Interface Compliance, Code Quality, Performance)
+and produce a structured report with per-dimension scores and evidence.
+</objective>
+
+<requirements>
+- Exercise the tool by calling it directly by name — do not write a standalone script.
+- Cover valid operations and invalid/edge inputs (division by zero, unknown operator, wrong types, missing args).
+- Verify the Response contract: results live in `data` (a dict), not in `extra`.
+</requirements>
+
+<acceptance>
+```
+{"a": 6, "b": 3, "op": "/"}   →   2.0                     (correctness)
+{"a": 2, "b": 3, "op": "+"}   →   5.0                     (correctness)
+{"a": 1, "b": 0, "op": "/"}   →   success=False, graceful (robustness)
+{"a": 5, "b": 2, "op": "?"}   →   success=False, graceful (robustness)
+```
+</acceptance>
+</div>
+
+</body>
+</html>

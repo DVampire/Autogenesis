@@ -1,0 +1,14 @@
+# Build context for docker/base/Dockerfile is the repo root (it installs the
+# framework). Keep the context lean and reproducible.
+.git
+output
+**/__pycache__
+*.pyc
+.venv
+venv
+**/node_modules
+docker/*/*.log
+.env
+.claude
+.autogenesis
+*.egg-info

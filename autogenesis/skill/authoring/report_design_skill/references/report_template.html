@@ -1,0 +1,81 @@
+<!--
+  Self-contained HTML analysis-report template. Copy into the work dir and fill in.
+  RULE: every figure is embedded with <img>. For a single portable file, embed each
+  chart as a data: URI; otherwise reference the PNG by a path relative to this file.
+  Pair with artifact_design_skill for palette/type/layout craft, then render + screenshot
+  with the artifact_renderer environment action and fix any CSP violations.
+  Inline ALL css/js; no external CDNs/fonts/scripts.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><Report title></title>
+<style>
+  :root { --bg:#faf8f4; --fg:#1c1b19; --muted:#6b6560; --accent:#3a6b52; --line:#e4ded4; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#16181a; --fg:#e7e4de; --muted:#9a938a; --accent:#7fb79a; --line:#2a2d30; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font: 16px/1.65 -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         max-width: 860px; margin-inline:auto; padding: 48px 24px; }
+  h1 { font-size: 2rem; line-height:1.15; text-wrap: balance; margin:0 0 .25em; }
+  h2 { font-size: 1.3rem; margin: 2em 0 .6em; padding-bottom:.3em; border-bottom:1px solid var(--line); }
+  h3 { font-size: 1.05rem; margin: 1.6em 0 .4em; }
+  .scope { color:var(--muted); font-size:1.05rem; margin:0 0 1.5em; }
+  .summary { background:color-mix(in srgb, var(--accent) 8%, transparent);
+             border-left:3px solid var(--accent); padding:14px 18px; border-radius:6px; }
+  figure { margin: 1em 0 1.6em; }
+  figure img { width:100%; height:auto; border:1px solid var(--line); border-radius:8px; display:block; }
+  figcaption { color:var(--muted); font-size:.9rem; margin-top:.5em; }
+  table { width:100%; border-collapse: collapse; margin:1em 0; font-variant-numeric: tabular-nums; }
+  th,td { text-align:left; padding:8px 12px; border-bottom:1px solid var(--line); }
+  th { font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .appendix { color:var(--muted); font-size:.92rem; }
+  code { background:color-mix(in srgb, var(--fg) 8%, transparent); padding:1px 5px; border-radius:3px; }
+</style>
+</head>
+<body>
+
+  <h1><Report title></h1>
+  <p class="scope"><one-line scope></p>
+
+  <div class="summary">
+    <strong>Summary</strong>
+    <ul>
+      <li><Headline finding 1.></li>
+      <li><Headline finding 2.></li>
+    </ul>
+  </div>
+
+  <h2>Data &amp; method</h2>
+  <p><Source, size, cleaning, what was computed.></p>
+
+  <h2>Findings</h2>
+
+  <h3><Finding 1: the claim></h3>
+  <p><Prose + supporting numbers.></p>
+  <figure>
+    <img src="<figure_1.png>" alt="<caption>">
+    <figcaption><Interpretation of the figure.></figcaption>
+  </figure>
+
+  <h3><Finding 2: the claim></h3>
+  <p><Prose + supporting numbers.></p>
+  <figure>
+    <img src="<figure_2.png>" alt="<caption>">
+    <figcaption><Interpretation of the figure.></figcaption>
+  </figure>
+
+  <h2>Interpretation &amp; caveats</h2>
+  <p><What it means; honest limitations.></p>
+
+  <h2 class="appendix">Appendix — data &amp; reproduction</h2>
+  <p class="appendix">
+    <code><raw_dataset.csv></code> raw data ·
+    <code><summary_stats.csv></code> statistics ·
+    <code><analysis_script.py></code> regenerates figures and this report
+  </p>
+
+</body>
+</html>

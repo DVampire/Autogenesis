@@ -1,0 +1,15 @@
+memory_optimize_agent = dict(
+    name="memory_optimize_agent",
+    type="MemoryOptimizeAgent",
+    description="An agent that improves an existing evolvable memory system.",
+    model_name="google/gemini-3.1-pro-preview",
+    prompt_name="memory_optimize_agent",
+    memory_name="file_system_memory",
+    max_actions=10,
+    max_step=30,
+    max_token=1000000,
+    timeout=1800,
+    review_steps=5,
+    enable_evolving=False,
+    use_memory=True,
+)

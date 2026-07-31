@@ -1,7 +1,7 @@
 memory_system = dict(
-    base_dir = f"workdir/memory",
-    model_name = "gpt-4.1",
+    base_dir = "memory",
+    model_name = "google/gemini-3.1-pro-preview",
     max_summaries = 10,
     max_insights = 10,
-    require_grad = False,
+    enable_evolving = False,
 )

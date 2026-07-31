@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="penguins_analysis">
+  <meta name="description" content="Self-contained HTML exploratory data analysis report on the Palmer Penguins dataset, with inferential statistics and a species classifier">
+  <meta name="version" content="2.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Produce an in-depth, publication-quality exploratory data analysis of the
+Palmer Penguins dataset. Go beyond descriptive means: characterize how the
+three species (Adelie, Chinstrap, Gentoo) differ in body-size morphology, how
+that morphology varies with sex and island, whether the observed differences
+are statistically significant, how the morphological measurements relate to one
+another, and whether species can be predicted from morphology alone. Deliver a
+single self-contained HTML report that renders anywhere — every chart embedded
+inline as a `data:` URI so the report needs no external files. Do all work with
+Python via bash in the work directory, and let the data drive the narrative:
+each claim in the report must be backed by a number or a figure you actually
+computed.
+</objective>
+
+<requirements>
+- Download the CSV from
+  `https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv`
+  into the work directory and confirm it is non-empty.
+- Load and clean it with pandas. Report the raw row count, how many rows were
+  dropped for missing values (and in which columns), and the final analyzed
+  count. Keep `species`, `island`, `sex`, `year` and the four numeric
+  morphology columns (`bill_length_mm`, `bill_depth_mm`, `flipper_length_mm`,
+  `body_mass_g`).
+- Descriptive layer: a per-species summary table with row count and the mean
+  AND standard deviation of each of the four numeric columns.
+- Group-structure layer: quantify sexual dimorphism (male vs female means per
+  species, e.g. body mass) and describe the species-by-island composition
+  (which species live on which islands) as a contingency table.
+- Inferential layer: test whether species differ on at least two morphology
+  measures using an appropriate test (one-way ANOVA, or Kruskal-Wallis if
+  assumptions fail), and report the test statistic, the p-value, and an effect
+  size. State plainly whether each difference is statistically significant.
+- Relationship layer: report the pairwise correlation matrix of the four
+  numeric measures, and fit at least one regression (e.g. body mass vs flipper
+  length, ideally per species) reporting slope and R^2.
+- Modeling layer: train a simple classifier (e.g. logistic regression or a
+  decision tree) to predict species from the four morphology features using a
+  train/test split, and report held-out accuracy. Accuracy must be >= 0.95 on
+  this dataset; if not, diagnose why in the report.
+- Generate a rich set of charts (matplotlib/seaborn, Agg backend, every chart
+  titled with labeled axes and a legend where relevant), at minimum: (1) a
+  bill-length-vs-bill-depth scatter colored by species; (2) a body-mass
+  distribution by species (boxplot or violin); (3) a body-mass-by-sex-and-species
+  grouped comparison showing dimorphism; (4) a correlation heatmap of the four
+  numeric measures; (5) a regression scatter with fitted line(s); (6) the
+  classifier's confusion matrix.
+- Deliver `analysis_report.html` as a polished, self-contained analysis report
+  following the report_design_skill discipline (and artifact_design_skill for
+  visual craft): inline all CSS, and **embed every chart directly in the HTML as
+  a base64 `data:image/png;base64,...` URI** (do NOT reference external .png
+  files) so the single .html file renders on its own. Structure the report as a
+  narrative with sections for each layer above; place each chart under the
+  finding it supports with a caption; and include a short "Methods & caveats"
+  note covering the dropped rows and any test-assumption choices.
+</requirements>
+
+<acceptance>
+```
+workspace_root/penguins.csv          non-empty raw dataset
+workspace_root/analysis_report.html  single self-contained file; opens standalone
+                               with every chart visible (data: URIs, no
+                               external image files needed)
+verify_report.py <report>      PASS — figures embedded and resolve
+
+Report content must include, as actual computed values (not placeholders):
+  - per-species mean AND std table for all four numeric columns
+  - male-vs-female dimorphism figures and a species x island contingency table
+  - at least two significance tests with test statistic, p-value, effect size
+  - a 4x4 correlation matrix and a regression slope + R^2
+  - held-out classifier accuracy >= 0.95 (or a stated diagnosis if lower)
+  - at least 6 embedded charts, each with a title, labeled axes, and caption
+```
+</acceptance>
+</div>
+
+</body>
+</html>

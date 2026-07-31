@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="calculator_tool_generate">
+  <meta name="description" content="Generate &amp; verify a calculator tool">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Create a new tool named `calculator_tool` that performs the four basic
+arithmetic operations, then verify it works. Deliver it as an extension
+component (do not modify `src/`).
+</objective>
+
+<requirements>
+- Supports four operations: add, subtract, multiply, divide.
+- Returns the numeric result in both the message and the structured `data` field.
+- Raises a clear, specific error on division by zero (no NaN, no silent default).
+</requirements>
+
+<interface>
+| Arg  | Type  | Description |
+|------|-------|-------------|
+| `a`  | float | Left operand. |
+| `b`  | float | Right operand. |
+| `op` | str   | One of `+` `-` `*` `/`. |
+</interface>
+
+<acceptance>
+```
+{"a": 6, "b": 3, "op": "/"}   →   2.0
+{"a": 2, "b": 3, "op": "+"}   →   5.0
+{"a": 1, "b": 0, "op": "/"}   →   clear division-by-zero error
+{"a": 5, "b": 2, "op": "%"}   →   clear error naming the unknown op
+```
+</acceptance>
+
+<plan>
+- Generate the tool as an extension component following the tool convention.
+- Evaluate it against the acceptance cases, including both error paths.
+- Report the result and whether every acceptance case passed.
+</plan>
+</div>
+
+</body>
+</html>

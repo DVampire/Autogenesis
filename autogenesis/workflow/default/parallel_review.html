@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="name" content="parallel_review">
+  <meta name="description" content="Parallel independent review with verification and synthesis.">
+  <meta name="version" content="1.0.2">
+  <meta name="workflow-schema-version" content="1.1.0">
+  <title>Parallel Review · Dynamic Workflow</title>
+  <link rel="stylesheet" href="../../visual/css/prompt.css">
+  <link rel="stylesheet" href="../../visual/css/workflow.css">
+  <script defer src="../../visual/js/workflow.js"></script>
+</head>
+<body>
+<main class="workflow-preview" data-workflow-preview>
+  <noscript>This preview requires JavaScript. The embedded Workflow definition remains readable in the page source.</noscript>
+</main>
+
+<!--
+  The element below is executable Workflow source. WorkflowCompiler reads it directly;
+  visual/js/workflow.js renders a separate preview without modifying the source tree.
+-->
+<workflow
+  name="parallel_review"
+  schema-version="1.1.0"
+  version="1.0.2"
+  description="Review a change from independent perspectives, verify findings, and synthesize a report."
+  max-agents="40"
+  max-concurrency="8"
+  enable-evolving="false">
+  <inputs>
+    <input name="task" type="string" required="true" description="What should be reviewed." />
+    <input name="perspectives" type="array" required="true" description="Independent review angles." />
+    <schema for="perspectives">{"type":"array","items":{"type":"string"},"minItems":1}</schema>
+  </inputs>
+  <applicability>
+    <tag>review</tag><tag>verification</tag><tag>parallel</tag>
+    Use for consequential work that benefits from independent review and adversarial verification.
+  </applicability>
+  <flow>
+    <map id="reviews" items="${inputs.perspectives}" as="perspective" concurrency="8">
+      <agent id="review" name="general_agent" task="Review from the ${perspective} perspective: ${inputs.task}">
+        <arg name="perspective" value="${perspective}" />
+      </agent>
+    </map>
+    <verify id="verified" items="${reviews}" as="finding" agent="general_agent"
+            task="Independently verify this review and reject unsupported claims: ${finding}"
+            concurrency="8" />
+    <reduce id="report" items="${verified}" agent="general_agent"
+            task="Deduplicate verified findings, rank them by impact, and produce one concise report." />
+  </flow>
+  <outputs><output name="report" value="${report}" /></outputs>
+</workflow>
+</body>
+</html>

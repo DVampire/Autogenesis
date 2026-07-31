@@ -1,0 +1,135 @@
+{
+  "id": "",
+  "name": "Draft and Review",
+  "description": "One agent drafts, a reviewer verifies, then return the result.",
+  "version": "1.0.0",
+  "document_version": 2,
+  "nodes": [
+    {
+      "id": "in_t",
+      "type": "input",
+      "step_type": null,
+      "target": null,
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "task",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "What to work on.",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "draft",
+      "type": "step",
+      "step_type": "agent",
+      "target": "general_agent",
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 260,
+        "y": 0
+      }
+    },
+    {
+      "id": "review",
+      "type": "step",
+      "step_type": "agent",
+      "target": "reviewer_agent",
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 520,
+        "y": 0
+      }
+    },
+    {
+      "id": "out_r",
+      "type": "output",
+      "step_type": null,
+      "target": null,
+      "task": "",
+      "args": {},
+      "items": "",
+      "attrs": {},
+      "mounts": {},
+      "frozen": false,
+      "frozen_output": null,
+      "name": "result",
+      "input_type": "string",
+      "required": false,
+      "default": null,
+      "description": "",
+      "value": "",
+      "parent": null,
+      "slot": "body",
+      "position": {
+        "x": 780,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "in_t",
+      "target": "draft",
+      "param": "task",
+      "source_port": "out"
+    },
+    {
+      "id": "e2",
+      "source": "draft",
+      "target": "review",
+      "param": "task",
+      "source_port": "out"
+    },
+    {
+      "id": "e3",
+      "source": "review",
+      "target": "out_r",
+      "param": "value",
+      "source_port": "out"
+    }
+  ],
+  "notes": [],
+  "published": false,
+  "program_hash": ""
+}

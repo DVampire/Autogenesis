@@ -1,0 +1,16 @@
+skill_evaluate_agent = dict(
+    name="skill_evaluate_agent",
+    type="SkillEvaluateAgent",
+    description="An agent that evaluates skill quality given an evaluation task.",
+    model_name="google/gemini-3.1-pro-preview",
+    prompt_name="skill_evaluate_agent",
+    memory_name="file_system_memory",
+    max_actions=10,
+    max_step=20,
+    max_token=1000000,
+    timeout=1800,
+    review_steps=5,
+    enable_evolving=False,
+    permission_mode="read_only",
+    use_memory=True,
+)

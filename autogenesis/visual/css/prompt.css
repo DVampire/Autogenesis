@@ -1,0 +1,706 @@
+:root {
+  --ground:      #0E1210;
+  --surface:     #141B12;
+  --surface-2:   #1B2418;
+  --surface-3:   #222C1E;
+  --text:        #C8DDB8;
+  --text-mid:    #6A8E5C;
+  --text-faint:  #2E4428;
+  --green:       #5BAD78;
+  --amber:       #CFA040;
+  --red:         #D45E3E;
+  --blue:        #5E93C0;
+  --border:      #243220;
+  --border-hi:   #384F2E;
+
+  --mono: 'Courier New', Courier, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--mono);
+  background: var(--ground);
+  color: var(--text);
+  line-height: 1.65;
+  padding: 40px 28px 100px;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =====================================================
+   TOP-LEVEL WRAPPERS — div.system / div.user
+   ===================================================== */
+
+div.system,
+div.user {
+  max-width: 1000px;
+  margin: 0 auto 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  counter-reset: section;
+}
+
+div.system::before {
+  display: block;
+  content: "SYSTEM";
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.22em;
+  color: var(--green);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+}
+
+div.user::before {
+  display: block;
+  content: "USER";
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.22em;
+  color: var(--text-mid);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+}
+
+/* =====================================================
+   DIRECT CHILDREN — div blocks (numbered sections)
+   ===================================================== */
+
+div.system > div,
+div.user > div {
+  background: var(--surface-2);
+  border-radius: 2px;
+  border-left: 2px solid var(--border-hi);
+  padding: 14px 16px;
+  counter-increment: section;
+}
+
+div.system > div::before,
+div.user > div::before {
+  display: block;
+  content: counter(section, decimal-leading-zero) "  ·  " attr(class);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+/* Nested blocks */
+div.system > div > div,
+div.user > div > div {
+  background: var(--surface);
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  margin-top: 10px;
+  counter-increment: none;
+}
+
+div.system > div > div::before,
+div.user > div > div::before {
+  display: block;
+  content: attr(class);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+}
+
+/* =====================================================
+   SEMANTIC TAGS — base style
+   All custom tags get the same base, then overridden
+   per section type below.
+   ===================================================== */
+
+div.system > :not(div):not(style):not(module),
+div.user > :not(div):not(style):not(module) {
+  display: block;
+  background: var(--surface-2);
+  border-radius: 2px;
+  border-left: 2px solid var(--border-hi);
+  padding: 14px 16px;
+  counter-increment: section;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+/* Pluggable <module src> slots are inlined by prompt.js before styling; keep them
+   invisible (and out of the section counter) during the brief pre-inline window. */
+div.system > module,
+div.user > module { display: none; }
+
+/* Specificity 0,0,1,1 — all specific tag rules (0,0,1,2) override this */
+div.system > *::before,
+div.user > *::before {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  content: counter(section, decimal-leading-zero);
+}
+
+/* =====================================================
+   SECTION COLOR CATEGORIES
+   HTML stays clean — CSS selects on tag name.
+   ===================================================== */
+
+/* ── GREEN — Identity / Profile ── */
+div.system > profile {
+  border-left-color: var(--green);
+  background: rgba(91,173,120,0.04);
+  font-size: 14px;
+}
+div.system > profile::before {
+  content: counter(section, decimal-leading-zero) "  ·  profile";
+  color: var(--green);
+  border-bottom-color: rgba(91,173,120,0.2);
+}
+
+/* ── AMBER — Constraints / Caution ── */
+div.system > constraint-rules {
+  border-left-color: var(--amber);
+  background: rgba(207,160,64,0.04);
+}
+div.system > constraint-rules::before {
+  content: counter(section, decimal-leading-zero) "  ·  constraint-rules";
+  color: var(--amber);
+  border-bottom-color: rgba(207,160,64,0.2);
+}
+
+/* ── RED — Highest Priority Instructions ── */
+div.system > task-rules {
+  border-left-color: var(--red);
+  background: rgba(212,94,62,0.04);
+}
+div.system > task-rules::before {
+  content: counter(section, decimal-leading-zero) "  ·  task-rules";
+  color: var(--red);
+  border-bottom-color: rgba(212,94,62,0.2);
+}
+
+/* ── BLUE — Informational / Environmental Context ── */
+div.system > input-rules       { border-left-color: var(--blue); }
+div.system > context-rules     { border-left-color: var(--blue); }
+div.system > situation-rules   { border-left-color: var(--blue); }
+div.system > execution-state-rules { border-left-color: var(--blue); }
+div.system > project           { border-left-color: var(--blue); }
+
+div.system > input-rules::before {
+  content: counter(section, decimal-leading-zero) "  ·  input-rules";
+  color: var(--blue); border-bottom-color: rgba(94,147,192,0.2);
+}
+div.system > context-rules::before {
+  content: counter(section, decimal-leading-zero) "  ·  context-rules";
+  color: var(--blue); border-bottom-color: rgba(94,147,192,0.2);
+}
+div.system > situation-rules::before {
+  content: counter(section, decimal-leading-zero) "  ·  situation-rules";
+  color: var(--blue); border-bottom-color: rgba(94,147,192,0.2);
+}
+div.system > execution-state-rules::before {
+  content: counter(section, decimal-leading-zero) "  ·  execution-state-rules";
+  color: var(--blue); border-bottom-color: rgba(94,147,192,0.2);
+}
+div.system > project::before {
+  content: counter(section, decimal-leading-zero) "  ·  project";
+  color: var(--blue); border-bottom-color: rgba(94,147,192,0.2);
+}
+
+/* ── FAINT — Low-Priority Environment Setup ── */
+div.system > language-settings {
+  border-left-color: var(--border);
+  background: var(--surface-2);
+}
+div.system > language-settings::before {
+  content: counter(section, decimal-leading-zero) "  ·  language-settings";
+  color: var(--text-faint);
+}
+
+/* ── DEFAULT behavioral rule sections ── */
+div.system > plan-rules::before         { content: counter(section, decimal-leading-zero) "  ·  plan-rules"; }
+div.system > decision-rules::before     { content: counter(section, decimal-leading-zero) "  ·  decision-rules"; }
+div.system > reasoning-rules::before    { content: counter(section, decimal-leading-zero) "  ·  reasoning-rules"; }
+div.system > action-rules::before       { content: counter(section, decimal-leading-zero) "  ·  action-rules"; }
+div.system > action-selection-rules::before { content: counter(section, decimal-leading-zero) "  ·  action-selection-rules"; }
+div.system > output-rules::before       { content: counter(section, decimal-leading-zero) "  ·  output-rules"; }
+div.system > output-format::before      { content: counter(section, decimal-leading-zero) "  ·  output-format"; }
+div.system > sub-agents-rules::before   { content: counter(section, decimal-leading-zero) "  ·  sub-agents-rules"; }
+div.system > subtask-design::before     { content: counter(section, decimal-leading-zero) "  ·  subtask-design"; }
+div.system > memory-rules::before       { content: counter(section, decimal-leading-zero) "  ·  memory-rules"; }
+div.system > memory-rules-continued::before,
+div.system > memory-read-rules::before,
+div.system > memory-reading-rules::before { content: counter(section, decimal-leading-zero) "  ·  memory-rules"; }
+div.system > tool-context-rules::before { content: counter(section, decimal-leading-zero) "  ·  tool-context-rules"; }
+div.system > tool-use-rules::before     { content: counter(section, decimal-leading-zero) "  ·  tool-use-rules"; }
+div.system > todo-rules::before         { content: counter(section, decimal-leading-zero) "  ·  todo-rules"; }
+div.system > skill-context-rules::before { content: counter(section, decimal-leading-zero) "  ·  skill-context-rules"; }
+div.system > skill-use-rules::before    { content: counter(section, decimal-leading-zero) "  ·  skill-use-rules"; }
+div.system > example-rules::before      { content: counter(section, decimal-leading-zero) "  ·  example-rules"; }
+div.system > reasoning::before          { content: counter(section, decimal-leading-zero) "  ·  reasoning"; }
+div.system > efficiency-guidelines::before { content: counter(section, decimal-leading-zero) "  ·  efficiency-guidelines"; }
+div.system > canonical-workflow::before { content: counter(section, decimal-leading-zero) "  ·  canonical-workflow"; }
+div.system > evaluation-dimensions::before { content: counter(section, decimal-leading-zero) "  ·  evaluation-dimensions"; }
+div.system > optimization-target-rules::before { content: counter(section, decimal-leading-zero) "  ·  optimization-target-rules"; }
+div.system > code-operation-rules::before { content: counter(section, decimal-leading-zero) "  ·  code-operation-rules"; }
+div.system > evaluation-target-rules::before { content: counter(section, decimal-leading-zero) "  ·  evaluation-target-rules"; }
+div.system > generation-target-rules::before { content: counter(section, decimal-leading-zero) "  ·  generation-target-rules"; }
+div.system > tool-convention::before    { content: counter(section, decimal-leading-zero) "  ·  tool-convention"; }
+div.system > domain-rules::before       { content: counter(section, decimal-leading-zero) "  ·  domain-rules"; }
+
+/* ── CODE BLOCKS — schema / template sections ── */
+div.system > output-schema,
+div.system > done-tool-schema,
+div.system > memory-format,
+div.system > tool-format-schema,
+div.system > skill-format-schema,
+div.system > available-tools-format,
+div.system > available-skills-format,
+div.system > test-template,
+div.system > tool-template,
+div.system > init-template,
+div.system > verification-template {
+  background: var(--surface-3);
+  border: 1px solid var(--border-hi);
+  border-left: 2px solid var(--border-hi);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.65;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+div.system > output-schema::before,
+div.system > done-tool-schema::before,
+div.system > memory-format::before,
+div.system > tool-format-schema::before,
+div.system > skill-format-schema::before,
+div.system > available-tools-format::before,
+div.system > available-skills-format::before,
+div.system > test-template::before,
+div.system > tool-template::before,
+div.system > init-template::before,
+div.system > verification-template::before { display: none; }
+
+/* =====================================================
+   USER SECTION — context blocks
+   ===================================================== */
+
+div.user > tool-context,
+div.user > skill-context,
+div.user > connector-context,
+div.user > examples,
+div.user > evaluation-target,
+div.user > optimization-target,
+div.user > generation-target,
+div.user > domain-target {
+  border: 1px dashed var(--border-hi);
+  border-left: 2px solid var(--text-faint);
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-mid);
+}
+
+div.user > tool-context::before    { content: counter(section, decimal-leading-zero) "  ·  tool-context";    color: var(--text-mid); border-bottom-color: var(--border); }
+div.user > skill-context::before   { content: counter(section, decimal-leading-zero) "  ·  skill-context";   color: var(--text-mid); border-bottom-color: var(--border); }
+div.user > connector-context::before { content: counter(section, decimal-leading-zero) "  ·  connector-context"; color: var(--text-mid); border-bottom-color: var(--border); }
+div.user > examples::before        { content: counter(section, decimal-leading-zero) "  ·  examples";        color: var(--text-mid); border-bottom-color: var(--border); }
+div.user > evaluation-target::before  { content: counter(section, decimal-leading-zero) "  ·  evaluation-target";  color: var(--text-mid); border-bottom-color: var(--border); }
+div.user > optimization-target::before { content: counter(section, decimal-leading-zero) "  ·  optimization-target"; color: var(--text-mid); border-bottom-color: var(--border); }
+div.user > generation-target::before  { content: counter(section, decimal-leading-zero) "  ·  generation-target";  color: var(--text-mid); border-bottom-color: var(--border); }
+div.user > domain-target::before   { content: counter(section, decimal-leading-zero) "  ·  domain-target";   color: var(--text-mid); border-bottom-color: var(--border); }
+
+/* =====================================================
+   CAPABILITY CARDS — tool / skill / connector context.
+   Each capability is injected as markdown: one "## name"
+   header (the card divider) + a description line + bold
+   sub-labels (Parameters / Example / ...), lists, and an
+   example block. The content is real parsed HTML now, so
+   drop the inherited pre-wrap (it turned inter-tag
+   newlines into blank lines) and give every H2 a compact
+   ruled header so consecutive cards read as separate.
+   ===================================================== */
+div.user > tool-context,
+div.user > skill-context,
+div.user > connector-context {
+  white-space: normal;
+  padding-top: 2px;
+  padding-bottom: 6px;
+}
+
+div.user > tool-context h2,
+div.user > skill-context h2,
+div.user > connector-context h2 {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text);
+  margin: 14px 0 6px;
+  padding: 6px 10px 6px 10px;
+  border-top: 1px solid var(--border-hi);
+  border-left: 2px solid var(--green);
+  background: var(--surface-3);
+  letter-spacing: 0.01em;
+}
+
+div.user > tool-context h2:first-child,
+div.user > skill-context h2:first-child,
+div.user > connector-context h2:first-child {
+  margin-top: 0;
+  border-top: none;
+}
+
+div.user > tool-context p,
+div.user > skill-context p,
+div.user > connector-context p {
+  margin: 4px 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+div.user > tool-context ul,
+div.user > skill-context ul,
+div.user > connector-context ul {
+  margin: 3px 0 8px;
+  padding-left: 16px;
+}
+
+div.user > tool-context li,
+div.user > skill-context li,
+div.user > connector-context li {
+  margin-bottom: 2px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+div.user > tool-context pre,
+div.user > skill-context pre,
+div.user > connector-context pre {
+  margin: 4px 0 8px;
+}
+
+/* =====================================================
+   AGENT-CONTEXT — container of nested sub-modules
+   (task / constraints / available-agents / situation /
+    execution-state). The container is a numbered section;
+    each child renders as its own sub-module card.
+   ===================================================== */
+
+div.user > agent-context {
+  display: block;
+  background: var(--surface-2);
+  border: 1px dashed var(--border-hi);
+  border-left: 2px solid var(--text-faint);
+  border-radius: 2px;
+  padding: 14px 16px;
+  counter-increment: section;
+}
+
+div.user > agent-context::before {
+  display: block;
+  content: counter(section, decimal-leading-zero) "  ·  agent-context";
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-mid);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+/* ── Sub-module cards ──
+   No white-space: pre-wrap here — these hold marked-generated HTML
+   (<p>/<ul>/<li>), so pre-wrap would turn every newline between tags
+   into a visible blank line. Block-element margins handle the rhythm. */
+div.user > agent-context > * {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--border-hi);
+  border-radius: 3px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  word-break: break-word;
+  color: var(--text-mid);
+}
+div.user > agent-context > :first-child { margin-top: 0; }
+
+/* Tighten marked output inside sub-modules: first/last blocks flush,
+   modest paragraph rhythm. */
+div.user > agent-context > * > :first-child { margin-top: 0; }
+div.user > agent-context > * > :last-child  { margin-bottom: 0; }
+div.user > agent-context > * p { margin: 0 0 8px; }
+div.user > agent-context > * ul,
+div.user > agent-context > * ol { margin: 6px 0 8px; }
+div.user > agent-context > * h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-mid);
+  margin: 12px 0 6px;
+}
+
+div.user > agent-context > *::before {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+}
+
+div.user > agent-context > task::before            { content: "task"; color: var(--red); }
+div.user > agent-context > task                    { border-left-color: var(--red); }
+div.user > agent-context > available-agents::before { content: "available-agents"; color: var(--blue); }
+div.user > agent-context > available-agents        { border-left-color: var(--blue); }
+div.user > agent-context > events::before          { content: "events"; color: var(--green); }
+div.user > agent-context > events                  { border-left-color: var(--green); }
+div.user > agent-context > plan::before            { content: "plan"; color: var(--blue); }
+div.user > agent-context > plan                    { border-left-color: var(--blue); }
+div.user > agent-context > execution-state::before { content: "execution-state"; color: var(--blue); }
+div.user > agent-context > execution-state         { border-left-color: var(--blue); }
+div.user > agent-context > step-info::before       { content: "step-info"; color: var(--text-mid); }
+div.user > agent-context > step-info               { border-left-color: var(--text-mid); }
+div.user > agent-context > memory::before          { content: "memory"; color: var(--blue); }
+div.user > agent-context > memory                  { border-left-color: var(--blue); }
+div.user > agent-context > workspace::before       { content: "workspace"; color: var(--text-mid); }
+div.user > agent-context > workspace               { border-left-color: var(--text-mid); }
+div.user > agent-context > errors::before          { content: "errors"; color: var(--red); }
+div.user > agent-context > errors                  { border-left-color: var(--red); }
+div.user > agent-context > browser-state::before   { content: "browser-state"; color: var(--blue); }
+div.user > agent-context > browser-state           { border-left-color: var(--blue); }
+
+/* ── constraints sub-module — amber, hosts budget rings ── */
+div.user > agent-context > constraints {
+  border-left-color: var(--amber);
+  background: rgba(207,160,64,0.04);
+}
+div.user > agent-context > constraints::before { content: "constraints"; color: var(--amber); }
+
+/* =====================================================
+   BUDGET RINGS — data-driven conic-gradient progress
+   Built by prompt.js from the "used / limit" lines in the
+   constraints sub-module. --pct (0..100) and --ring set inline.
+   ===================================================== */
+
+/* Badge + rings form a visual summary, separated from the raw budget
+   text by a hairline divider. */
+.budget-summary {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--border-hi);
+}
+
+.budget-rings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 26px;
+  margin-top: 16px;
+}
+
+.budget-ring {
+  --pct: 0;
+  /* Brighter, cleaner accents than the muted base palette so the rings
+     read crisply against the dark ground. */
+  --ring: #63C487;
+  --track: #2F3E29;
+  position: relative;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  /* Donut: the radial layer punches a clean hole (no inner-border seam),
+     the conic layer is the progress arc over a visible track. */
+  background:
+    radial-gradient(closest-side, var(--surface) 70%, transparent 71% 100%),
+    conic-gradient(var(--ring) calc(var(--pct) * 1%), var(--track) 0);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  margin-bottom: 20px; /* room for the label below */
+}
+.budget-ring > .ring-pct {
+  position: relative;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  color: var(--ring);
+}
+.budget-ring > .ring-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-mid);
+}
+.budget-ring.tier-tight    { --ring: #E6B84F; }
+.budget-ring.tier-critical { --ring: #EC6E4C; }
+
+.budget-tier {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-hi);
+}
+.budget-tier.tier-normal   { color: #63C487; border-color: rgba(99,196,135,0.45); background: rgba(99,196,135,0.08); }
+.budget-tier.tier-tight    { color: #E6B84F; border-color: rgba(230,184,79,0.45); background: rgba(230,184,79,0.08); }
+.budget-tier.tier-critical { color: #EC6E4C; border-color: rgba(236,110,76,0.45); background: rgba(236,110,76,0.08); }
+
+/* =====================================================
+   INLINE ELEMENTS & TYPOGRAPHY
+   ===================================================== */
+
+div.code {
+  background: var(--surface-3);
+  border: 1px solid var(--border-hi);
+  border-left: 2px solid var(--border-hi);
+  color: var(--text);
+  border-radius: 2px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 10px 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.65;
+  white-space: pre;
+}
+
+div.code::before { display: none; }
+
+div.agent-context,
+div.tool-context,
+div.skill-context,
+div.examples,
+div.evaluation-target,
+div.optimization-target,
+div.generation-target {
+  border: 1px dashed var(--border-hi);
+  border-left: 2px solid var(--text-faint);
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-mid);
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--surface-3);
+  color: var(--green);
+  padding: 1px 5px;
+  border-radius: 2px;
+  border: 1px solid var(--border-hi);
+}
+
+strong {
+  color: var(--text);
+  font-weight: bold;
+}
+
+em {
+  color: var(--text-mid);
+  font-style: italic;
+}
+
+p {
+  font-size: 13px;
+  margin: 5px 0;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+ul, ol {
+  padding-left: 18px;
+  margin: 6px 0;
+}
+
+li {
+  margin-bottom: 4px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+li > ul, li > ol {
+  margin-top: 3px;
+  margin-bottom: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  font-size: 12.5px;
+  margin: 12px 0;
+}
+
+th {
+  background: var(--surface-2);
+  color: var(--text-mid);
+  font-size: 10.5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 9px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-hi);
+  font-family: var(--mono);
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text);
+}
+
+tr:last-child td { border-bottom: none; }

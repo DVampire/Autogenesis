@@ -1,0 +1,255 @@
+/* ============================== Canvas ==============================
+   Styled entirely on Langflow's design tokens (hsl(var(--...))) so the canvas
+   inherits the same light/dark theme as every shadcn component — no hardcoded
+   colors, no per-theme overrides. Layout/structure only below; color = token. */
+
+/* .view-nav and .app-shell.canvas-wide moved to index.css — they style the app
+   shell, which exists in every view, and this file only loads when the canvas
+   module does. */
+/* Fixed to the viewport (Langflow's h-screen), not min-height — otherwise the
+   canvas can grow past one screen and push the bottom-center controls pill off
+   the visible area. overflow-hidden keeps the flow pane clipped so the pill (a
+   React Flow Panel, screen-fixed within this box) always sits at the bottom. */
+.canvas-mode { grid-template-rows: auto 1fr auto; height: 100vh; min-height: 0; overflow: hidden; }
+.canvas-notice { margin: 0 24px 12px; }
+.canvas-view { min-height: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); }
+/* Playground modal open: palette hidden, so drop to a single column and let the
+   stage (hence the full-cover chat modal) span the whole width. */
+.canvas-view.playground-active { grid-template-columns: minmax(0, 1fr); }
+
+/* --- palette --- */
+.canvas-catalog { width: 280px; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid hsl(var(--border)); background: hsl(var(--background)); transition: width .15s ease; }
+.canvas-catalog.collapsed { width: 48px; }
+.canvas-catalog-head { display: flex; align-items: center; margin: 4px 8px 6px 16px; }
+.canvas-catalog-title { margin: 0; color: hsl(var(--foreground)); font-size: 13px; font-weight: 650; }
+/* collapsed icon rail — Langflow sidebarSegmentedNav (vertical icon buttons) */
+.lf-rail { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 0; }
+.lf-rail-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 0; border-radius: 6px; color: hsl(var(--muted-foreground)); background: transparent; cursor: pointer; transition: background .12s ease, color .12s ease; }
+.lf-rail-btn:hover { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+.lf-rail-sep { width: 20px; border-top: 1px solid hsl(var(--border)); margin: 2px 0; }
+.canvas-catalog-list { min-height: 0; flex: 1; overflow-y: auto; padding: 0 10px 16px; }
+.canvas-cat-head { display: flex; align-items: center; gap: 9px; width: 100%; margin-top: 6px; border: 0; border-radius: 9px; padding: 8px 8px; color: hsl(var(--foreground)); background: transparent; text-align: left; }
+.canvas-cat-head:hover { background: hsl(var(--accent)); }
+.canvas-cat-head strong { flex: 1; font-size: 13px; font-weight: 600; }
+.canvas-cat-head[aria-expanded='true'] strong { font-weight: 680; }
+.canvas-cat-head em { color: hsl(var(--muted-foreground)); font-style: normal; font-size: 13px; }
+/* Langflow section-header glyph: muted, accent-pink when the section is open. */
+.lf-cat-icon { color: hsl(var(--muted-foreground)); flex: 0 0 auto; }
+.canvas-cat-head[aria-expanded='true'] .lf-cat-icon { color: hsl(333 71% 51%); }
+.lf-cat-chevron svg { transition: transform .15s ease; }
+.canvas-cat-head[aria-expanded='true'] .lf-cat-chevron svg { transform: rotate(90deg); }
+/* Bundles: a super-section whose sub-groups (one per migrated Langflow bundle)
+   nest one level deeper — indented, with a small count chip. */
+.lf-cat-count { margin-right: 2px; color: hsl(var(--muted-foreground)); font-size: 11px; font-variant-numeric: tabular-nums; }
+.lf-plugin { margin-left: 10px; border-left: 1px solid hsl(var(--border)); padding-left: 6px; }
+.lf-plugin-head { margin-top: 2px; padding: 6px 8px; }
+.lf-plugin-head strong { font-size: 12.5px; font-weight: 500; }
+.lf-plugin-head[aria-expanded='true'] strong { font-weight: 620; }
+.lf-plugin-head img { border-radius: 4px; }
+/* Langflow component row: muted pill + colored LEFT border (set inline per
+   category), a plain monochrome glyph, and a grip handle. */
+.canvas-palette-item { display: flex; align-items: center; gap: 9px; margin: 4px 2px 4px 6px; border: 1px solid hsl(var(--border)); border-left-width: 3px; border-radius: 8px; padding: 8px 10px; color: hsl(var(--foreground)); background: hsl(var(--muted)); cursor: grab; transition: background .12s ease; }
+.canvas-palette-item:hover { background: hsl(var(--secondary-hover)); }
+.canvas-palette-item:active { cursor: grabbing; }
+.canvas-palette-item strong { flex: 1; font-size: 12.5px; font-weight: 550; }
+.canvas-palette-item .drag-dots { color: hsl(var(--muted-foreground)); font-style: normal; font-size: 12px; }
+.lf-item-icon { color: hsl(var(--muted-foreground)); flex: 0 0 auto; }
+.lf-head-icon { color: hsl(var(--foreground)); flex: 0 0 auto; }
+
+/* --- stage & toolbar --- */
+.canvas-stage { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.canvas-toolbar { display: flex; flex: 0 0 auto; align-items: center; gap: 7px; padding: 5px 12px; border-bottom: 1px solid hsl(var(--border)); background: hsl(var(--background)); }
+.canvas-toolbar-spacer { flex: 1; }
+.canvas-dirty { color: hsl(26 90% 45%); font-size: 11.5px; font-style: normal; }
+.canvas-badge { color: hsl(142 60% 40%); font-size: 11px; font-style: normal; white-space: nowrap; }
+.canvas-badge.drift { color: hsl(26 90% 45%); }
+.canvas-flow-wrap { position: relative; min-height: 0; flex: 1; }
+/* Empty-canvas welcome (Langflow flow-builder-welcome, simplified). */
+.canvas-empty { pointer-events: none; position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; color: hsl(var(--muted-foreground)); text-align: center; }
+.canvas-empty svg { width: 46px; height: 46px; opacity: .5; }
+.canvas-empty h3 { margin: 6px 0 0; color: hsl(var(--foreground)); font-size: 18px; font-weight: 600; }
+.canvas-empty p { max-width: 340px; margin: 0; font-size: 13px; line-height: 1.5; }
+.canvas-empty strong { color: hsl(var(--primary)); }
+.canvas-flow-wrap .react-flow { background: hsl(var(--canvas)); }
+.canvas-flow-wrap .react-flow__background { color: hsl(var(--canvas-dot)); }
+/* Alignment guides while dragging — copied from Langflow applies.css. */
+.helper-lines { pointer-events: none; position: absolute; left: 0; top: 0; z-index: 10; height: 100%; width: 100%; }
+.helper-line { stroke: hsl(var(--primary)); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.8; filter: drop-shadow(0 0 2px hsl(var(--primary) / 0.3)); }
+
+/* --- node cards (Langflow genericNode: white card, subtle border+shadow) --- */
+/* Langflow genericNode: rounded-xl border shadow-sm hover:shadow-md, white card. */
+.lf-node { width: 300px; border: 1px solid hsl(var(--border)); border-radius: 12px; color: hsl(var(--foreground)); background: hsl(var(--card)); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); font-size: 13px; transition: box-shadow .15s ease; }
+.lf-node:hover { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+.lf-node.selected { border-color: hsl(var(--node-selected)); box-shadow: 0 0 0 2px hsl(var(--node-selected) / 0.35); }
+/* Collapsed node: header only, but tall enough to stack its input handles down
+   the left edge so connected edges stay anchored. */
+.lf-node.lf-minimized { min-height: 48px; }
+.lf-min-handle { position: absolute; }
+/* Frozen node: its last output is pinned and reused (compiler inlines it). */
+.lf-node.lf-frozen { border-color: hsl(213 94% 68%); box-shadow: 0 0 0 2px hsl(213 94% 68% / 0.3); }
+.lf-frozen-badge { color: hsl(213 94% 68%); flex: 0 0 auto; }
+.lf-node.run-running { border-color: hsl(217 91% 60%); box-shadow: 0 0 0 2px hsl(217 91% 60% / 0.25); }
+.lf-node.run-succeeded { border-color: hsl(142 71% 45%); }
+.lf-node.run-failed { border-color: hsl(0 72% 51%); }
+.lf-node.run-skipped { opacity: .55; }
+/* Langflow header: icon + ml-3 + title(text-base font-medium text-primary), px-4 py-3. */
+.lf-node-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+.lf-node-head strong { min-width: 0; overflow: hidden; color: hsl(var(--primary)); font-size: 16px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+/* The ${id} reference chip clutters the resting header (Langflow shows no id):
+   reveal it only on hover / select, like Langflow's on-demand affordances. */
+.lf-node-ref { margin-left: auto; color: hsl(var(--muted-foreground)); font-size: 9.5px; background: hsl(var(--muted)); border-radius: 5px; padding: 2px 6px; white-space: nowrap; opacity: 0; transition: opacity .12s ease; }
+.lf-node:hover .lf-node-ref, .lf-node.selected .lf-node-ref { opacity: 1; }
+.lf-pulse { width: 8px; height: 8px; border-radius: 50%; background: hsl(217 91% 60%); animation: pulse 1.2s ease infinite; }
+.lf-run-count { color: hsl(var(--muted-foreground)); font-size: 10px; font-style: normal; }
+.lf-node-desc { margin: 0; padding: 2px 16px 12px; color: hsl(var(--muted-foreground)); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+/* Body rows are flush to the node border (no horizontal padding on the body);
+   each field pads itself, so a handle at the field's left:0 lands on the border. */
+.lf-node-body { display: grid; gap: 4px; padding: 6px 0; border-top: 1px solid hsl(var(--border)); }
+/* Langflow NodeInputField: min-h-10 px-5 py-2, label text-sm font-medium, input below. */
+.lf-field { position: relative; display: grid; gap: 8px; min-height: 40px; padding: 8px 20px; align-content: center; }
+.lf-field-label { color: hsl(var(--foreground)); font-size: 14px; font-weight: 500; }
+.lf-field-label em { color: hsl(0 72% 51%); font-style: normal; }
+.lf-bound { display: inline-block; border: 1px dashed hsl(var(--border)); border-radius: 8px; padding: 6px 10px; color: hsl(var(--muted-foreground)); font-size: 11.5px; }
+.lf-node-error { margin: 0; padding: 7px 14px 9px; color: hsl(0 72% 51%); font-size: 11px; }
+/* Sticky note (Langflow NoteNode): fills the resizable node wrapper. */
+.lf-note { width: 100%; height: 100%; border-radius: 12px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.14); overflow: hidden; }
+.lf-note-text { width: 100%; height: 100%; resize: none; border: 0; background: transparent; padding: 12px 14px; color: #1a1a1a; font-size: 13px; line-height: 1.5; outline: none; }
+.lf-note-text::placeholder { color: rgba(0,0,0,.38); }
+/* Handle style ported from langflow's handleRenderComponent: a small solid dot
+   with a thin card ring, a 32px transparent hit area, and a datatype-colored
+   neon glow on hover / valid drop (getNeonShadow). Its color comes from the
+   inline `--handle-color` var set alongside the dot's background. */
+.lf-handle { --handle-color: hsl(var(--node-selected)); width: 10px; height: 10px; border: 0; border-radius: 9999px; box-shadow: 0 0 0 2px hsl(var(--card)); transition: box-shadow .14s ease; cursor: crosshair; }
+.lf-handle:hover { box-shadow: 0 0 0 2px hsl(var(--card)), 0 0 0 5px var(--handle-color); }
+.lf-handle.react-flow__handle-valid,
+.lf-handle.connectionindicator:hover {
+  box-shadow: 0 0 0 1px hsl(var(--border)), 0 0 2px var(--handle-color), 0 0 4px var(--handle-color),
+    0 0 6px var(--handle-color), 0 0 8px var(--handle-color), 0 0 10px var(--handle-color),
+    0 0 15px var(--handle-color), 0 0 20px var(--handle-color);
+}
+.lf-handle::after { content: ''; position: absolute; left: 50%; top: 50%; width: 32px; height: 32px; transform: translate(-50%, -50%); border-radius: 9999px; }
+.lf-handle.in { position: absolute; left: 0; top: 50%; transform: translate(-50%, -50%); }
+.lf-handle.out { position: absolute; right: 0; top: 50%; transform: translate(50%, -50%); }
+
+/* --- containers --- */
+.lf-container { display: flex; flex-direction: column; border-style: dashed; background: hsl(var(--muted) / 0.6); }
+.lf-container .lf-node-body { border-top: 0; padding-top: 6px; }
+.lf-container-body { position: relative; flex: 1; margin: 0 14px 8px; border: 1px dashed hsl(var(--border)); border-radius: 10px; }
+.lf-container-body .zone-hint, .lf-container-body .zone-label { color: hsl(var(--muted-foreground)); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.lf-container-body .zone-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.lf-container-body .zone-label { position: absolute; left: 10px; }
+.lf-container-body .zone-label.then { top: 6px; }
+.lf-container-body .zone-label.else { bottom: 6px; }
+.lf-container-body .zone-divider { position: absolute; top: 50%; left: 8px; right: 8px; border-top: 1px dashed hsl(var(--border)); }
+
+/* --- edges --- */
+.canvas-ref-edge .react-flow__edge-path, .react-flow__edge.canvas-ref-edge path { stroke-dasharray: 5 4; opacity: .5; }
+
+/* --- right node panel (params + last run) --- */
+.node-panel { position: absolute; top: 14px; right: 14px; bottom: 14px; z-index: 5; display: flex; flex-direction: column; width: min(420px, 46%); border: 1px solid hsl(var(--border)); border-radius: 14px; background: hsl(var(--background)); box-shadow: 0 12px 40px hsl(var(--foreground) / 0.12); }
+.node-panel-head { display: flex; align-items: flex-start; gap: 10px; padding: 16px 16px 12px; border-bottom: 1px solid hsl(var(--border)); }
+.node-panel-head h3 { display: flex; align-items: center; gap: 8px; margin: 0; color: hsl(var(--foreground)); font-size: 16px; }
+.node-panel-head h3 code { color: hsl(var(--muted-foreground)); font-size: 10px; background: hsl(var(--muted)); border-radius: 5px; padding: 2px 6px; font-weight: 400; }
+.node-panel-head p { margin: 6px 0 0; color: hsl(var(--muted-foreground)); font-size: 12px; line-height: 1.5; }
+.panel-close { margin-left: auto; flex: 0 0 auto; border: 0; border-radius: 7px; width: 26px; height: 26px; color: hsl(var(--muted-foreground)); background: transparent; font-size: 18px; }
+.panel-close:hover { background: hsl(var(--accent)); }
+.node-panel-body { min-height: 0; flex: 1; overflow-y: auto; padding: 12px 16px 16px; display: grid; gap: 12px; align-content: start; }
+.panel-field { display: grid; gap: 5px; }
+.panel-field-label { color: hsl(var(--muted-foreground)); font-size: 11.5px; font-weight: 600; }
+.panel-run-heading { margin: 8px 0 0; color: hsl(var(--foreground)); font-size: 12.5px; font-weight: 650; border-top: 1px solid hsl(var(--border)); padding-top: 12px; }
+.panel-empty, .canvas-catalog-list .empty { color: hsl(var(--muted-foreground)); font-size: 12px; }
+.panel-frame { border: 1px solid hsl(var(--border)); border-radius: 10px; background: hsl(var(--muted) / 0.5); }
+.panel-frame > summary { display: flex; align-items: center; gap: 8px; padding: 8px 10px; color: hsl(var(--foreground)); font-size: 12px; cursor: pointer; list-style: none; }
+.panel-frame > summary em { color: hsl(var(--muted-foreground)); font-size: 11px; font-style: normal; }
+.panel-frame > summary small { margin-left: auto; color: hsl(var(--muted-foreground)); }
+.frame-dot { width: 8px; height: 8px; border-radius: 50%; background: hsl(var(--muted-foreground)); flex: 0 0 auto; }
+.frame-dot.running { background: hsl(217 91% 60%); animation: pulse 1.2s ease infinite; }
+.frame-dot.succeeded, .frame-dot.cached { background: hsl(142 71% 45%); }
+.frame-dot.failed { background: hsl(0 72% 51%); }
+.frame-dot.skipped, .frame-dot.cancelled { background: hsl(var(--muted-foreground)); }
+.panel-invocation { padding: 2px 10px 10px; }
+.panel-invocation-meta { margin: 4px 0 8px; color: hsl(var(--muted-foreground)); font-size: 11px; }
+.panel-io { margin-bottom: 8px; border: 1px solid hsl(var(--border)); border-radius: 9px; overflow: hidden; }
+.panel-io header { display: flex; align-items: center; justify-content: space-between; padding: 5px 9px; border-bottom: 1px solid hsl(var(--border)); color: hsl(var(--muted-foreground)); background: hsl(var(--muted) / 0.5); font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; }
+.panel-io header button { border: 0; border-radius: 5px; padding: 2px 7px; color: hsl(var(--primary)); background: hsl(var(--accent)); font-size: 10.5px; }
+.panel-io pre { max-height: 220px; overflow: auto; margin: 0; padding: 9px 10px; color: hsl(var(--foreground)); font-size: 11.5px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* --- results footer + run dialog --- */
+.canvas-results { flex: 0 0 auto; max-height: 200px; overflow: auto; padding: 10px 16px; border-top: 1px solid hsl(var(--border)); color: hsl(142 60% 35%); background: hsl(var(--background)); font-size: 12px; }
+.canvas-results pre { margin: 0; white-space: pre-wrap; }
+.canvas-results.failed { color: hsl(0 72% 51%); }
+.canvas-results .pulse { display: inline-block; width: 8px; height: 8px; margin-right: 7px; border-radius: 50%; background: hsl(217 91% 60%); animation: pulse 1.2s ease infinite; }
+.canvas-run-dialog-backdrop { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
+.canvas-run-dialog { display: grid; gap: 10px; width: min(440px, 92vw); border: 1px solid hsl(var(--border)); border-radius: 14px; padding: 20px; color: hsl(var(--foreground)); background: hsl(var(--background)); box-shadow: 0 24px 80px rgba(0,0,0,.3); }
+.canvas-run-dialog h3 { margin: 0; font-size: 16px; }
+.canvas-run-dialog label { display: grid; gap: 4px; font-size: 12px; color: hsl(var(--muted-foreground)); }
+.canvas-run-dialog label em { color: hsl(var(--muted-foreground)); font-style: normal; }
+.canvas-run-dialog textarea { border: 1px solid hsl(var(--input)); border-radius: 8px; padding: 7px 9px; color: hsl(var(--foreground)); background: hsl(var(--background)); font-size: 12.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; }
+.canvas-run-dialog footer { display: flex; justify-content: flex-end; gap: 8px; }
+.canvas-run-dialog button { border: 0; border-radius: 9px; padding: 7px 14px; color: hsl(var(--foreground)); background: hsl(var(--accent)); }
+.canvas-run-dialog button.primary { color: hsl(var(--primary-foreground)); background: hsl(var(--primary)); }
+
+/* node toolbar (Langflow nodeToolbarComponent) */
+.lf-node-toolbar { display: flex; gap: 2px; border: 1px solid hsl(var(--border)); border-radius: 9px; padding: 3px; background: hsl(var(--background)); box-shadow: 0 6px 18px hsl(var(--foreground) / 0.12); }
+.lf-node-toolbar button { display: grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 6px; color: hsl(var(--muted-foreground)); background: transparent; font-size: 13px; }
+.lf-node-toolbar button:hover { color: hsl(var(--foreground)); background: hsl(var(--accent)); }
+.lf-node-toolbar button.danger:hover { color: hsl(var(--destructive)); background: hsl(var(--destructive) / 0.12); }
+
+/* in-progress connection line (Langflow ConnectionLineComponent) */
+.canvas-connection-line { stroke: hsl(var(--node-selected)); animation: dashdraw 0.5s linear infinite; stroke-dasharray: 5; }
+.canvas-connection-dot { fill: hsl(var(--card)); stroke: hsl(var(--node-selected)); }
+@keyframes dashdraw { from { stroke-dashoffset: 10; } }
+
+/* edges (CustomEdges/DefaultEdge) + icon sizing */
+.react-flow__edge .lf-edge { stroke: hsl(var(--muted-foreground)); stroke-width: 1.75; }
+.react-flow__edge.selected .lf-edge, .react-flow__edge:focus .lf-edge { stroke: hsl(var(--node-selected)); stroke-width: 2.25; }
+.lf-node-icon svg { display: block; }
+.canvas-cat-head em svg, .drag-dots svg { display: block; color: hsl(var(--muted-foreground)); }
+
+/* Playground is a full-cover chat modal over the canvas (Langflow IOModal),
+   not the docked node-panel. Overrides node-panel's top/right/bottom inset,
+   width, border and rounding to fill the flow area; the chat column inside
+   stays centered at max-w-768px. */
+.playground-panel { inset: 0; width: auto; max-width: none; z-index: 20; border: 0; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; }
+.playground-panel .node-panel-head { flex-wrap: nowrap; gap: 6px; }
+
+/* Langflow chat utility classes referenced by the copied markup. */
+.word-break-break-word { word-break: break-word; }
+/* TextShimmer sweep (Langflow FlowRunningSqueleton "Flow running..."). */
+@keyframes lf-shimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
+.lf-shimmer {
+  background: linear-gradient(90deg, hsl(var(--muted-foreground)) 0%, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground)) 50%, hsl(var(--muted-foreground)) 58%, hsl(var(--muted-foreground)) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: lf-shimmer 2s linear infinite;
+}
+.custom-scroll { scrollbar-width: thin; scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent; }
+.custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scroll::-webkit-scrollbar-thumb { border-radius: 999px; background: hsl(var(--muted-foreground) / 0.4); }
+
+/* Agent capabilities — one collapsible section holding every mount kind
+   (tools/skills/connectors/workflows/environments/agents) selected inside the
+   agent node. Collapsed = header + summary; expanded = one box per kind. */
+/* No horizontal padding on the section — like .lf-node-body (6px 0) — so each
+   mount FieldShell's left:0 handle lands on the node border, not inset. The
+   FieldShell's own px-5 supplies the content inset; the header matches it. */
+.lf-mounts { position: relative; margin: 2px 0 0; padding: 4px 0 2px; border-top: 1px dashed hsl(var(--border)); }
+.lf-mounts.open { padding-bottom: 4px; }
+.lf-mounts-head { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; padding: 5px 20px; color: hsl(var(--muted-foreground)); background: transparent; cursor: pointer; }
+.lf-mounts-head:hover { color: hsl(var(--foreground)); }
+.lf-mounts-head svg { flex: 0 0 auto; }
+.lf-mounts-title { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.lf-mounts-summary { margin-left: auto; color: hsl(var(--muted-foreground)); font-size: 11px; }
+.lf-mounts-body { display: grid; gap: 8px; margin-top: 2px; }
+.lf-chip { display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; padding: 2px 4px 2px 7px; color: hsl(var(--foreground)); background: hsl(var(--accent)); font-size: 10.5px; }
+.lf-chip button { display: grid; place-items: center; border: 0; border-radius: 4px; color: hsl(var(--muted-foreground)); background: transparent; padding: 0; }
+.lf-chip button:hover { color: hsl(var(--destructive)); }
+/* Agent mount box: a clickable field (chips of the current selection, or a
+   placeholder) that opens the roster multi-select. */
+.lf-mount-box { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 34px; border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 5px 9px; color: hsl(var(--foreground)); background: hsl(var(--background)); text-align: left; cursor: pointer; transition: border-color .12s ease; }
+.lf-mount-box:hover { border-color: hsl(var(--node-selected)); }
+.lf-mount-box-body { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; flex: 1 1 auto; min-width: 0; }
+.lf-mount-placeholder { color: hsl(var(--muted-foreground)); font-size: 11.5px; }
+.lf-mount-caret { flex: 0 0 auto; color: hsl(var(--muted-foreground)); }
+

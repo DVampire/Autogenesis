@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="name" content="qsar_egfr_experiment">
+  <meta name="description" content="Iterative machine-learning experiment classifying EGFR inhibitors from real bioactivity data, delivered as a self-contained scientific report">
+  <meta name="version" content="1.0.0">
+  <link rel="stylesheet" href="../../autogenesis/visual/css/task.css">
+  <script src="../../autogenesis/visual/js/task.js"></script>
+</head>
+<body>
+
+<div class="task">
+<objective>
+Run a machine-learning experiment on real biological data: predict whether a
+small molecule is an active inhibitor of the human Epidermal Growth Factor
+Receptor (EGFR) from its chemical structure — a binary classification task.
+Treat it as an iterative experiment: improve the model over several rounds and
+report how each round changed the outcome. Deliver a single self-contained HTML
+report that reads as a scientific write-up of the experiment and its results.
+</objective>
+
+<requirements>
+- Use real, publicly sourced EGFR bioactivity data, obtained through the
+  available scientific data connectors.
+- Frame the problem as binary classification (active vs. inactive inhibitor).
+- Run the experiment as exactly 5 iterative rounds, each attempting to improve
+  on the previous one. Results must be comparable across rounds so the
+  progression is visible, and the report must explain what changed each round
+  and whether it helped.
+- Make use of the available scientific / domain skills where they strengthen the
+  experiment's scientific quality (e.g. grounding it in the literature and
+  presenting the methodology clearly).
+- Deliver the result as a polished, self-contained scientific report
+  (`experiment_report.html`): motivation, data, method, per-round results, and
+  interpretation, with every figure embedded so the single file renders on its
+  own.
+</requirements>
+
+<acceptance>
+```
+A single self-contained experiment_report.html that opens standalone with all
+figures visible (no external files needed) and verifies as self-contained.
+
+The report demonstrates, with actual computed values:
+  - a real EGFR bioactivity dataset was obtained and prepared for classification
+  - 5 iterative experimental rounds with comparable metrics and a clear account
+    of what changed each round
+  - an analysis of the best model and an honest discussion of the experiment's
+    limitations
+```
+</acceptance>
+</div>
+
+</body>
+</html>
